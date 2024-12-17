@@ -23,7 +23,7 @@ const AdminSignup = () => {
         email,
         password,
       });
-      localStorage.setItem("adminToken", response.data.token); // Store JWT token
+      //localStorage.setItem("adminToken", response.data.token); // Store JWT token
       navigate("/"); // Redirect to dashboard after successful signup
     } catch (error) {
       setError(error.response?.data?.message || "An error occurred during signup.");
