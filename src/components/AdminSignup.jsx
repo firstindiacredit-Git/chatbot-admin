@@ -18,13 +18,13 @@ const AdminSignup = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/admin/signup", {
+      const response = await axios.post("https://chatbot.pizeonfly.com/api/admin/signup", {
         username,
         email,
         password,
       });
       localStorage.setItem("adminToken", response.data.token); // Store JWT token
-      navigate("/dashboard"); // Redirect to dashboard after successful signup
+      navigate("/signup"); // Redirect to dashboard after successful signup
     } catch (error) {
       setError(error.response?.data?.message || "An error occurred during signup.");
     }
