@@ -24,7 +24,7 @@ const AdminSignup = () => {
         password,
       });
       localStorage.setItem("adminToken", response.data.token); // Store JWT token
-      navigate("/signup"); // Redirect to dashboard after successful signup
+      navigate("/"); // Redirect to dashboard after successful signup
     } catch (error) {
       setError(error.response?.data?.message || "An error occurred during signup.");
     }
