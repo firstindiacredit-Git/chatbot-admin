@@ -563,18 +563,43 @@ const AdminPanel = () => {
 
 
 
+              {/* <div className="mt-4 max-h-60 overflow-y-auto">
+                {websiteList.map((website) => (
+                  <div key={website._id} className="mb-2">
+                    <h3 className="font-bold">Integration Script for this Property: {website.name}</h3>
+                    <textarea
+                      readOnly
+                      // value={`<script src="https://pranjalscripts.github.io/integrate/embed.js/?websiteId=${website.websiteId}"></script>`}
+                      value={`<script src="https://pranjalscripts.github.io/integrate/embed.js/?websiteId=${website.websiteId}"></script>`}
+                      className="w-full p-2 border border-gray-300 rounded mt-2"
+                    />
+                  </div>
+                ))}
+              </div> */}
+
               <div className="mt-4 max-h-60 overflow-y-auto"> {/* Set max height and enable scrolling */}
                 {websiteList.map((website) => (
                   <div key={website._id} className="mb-2">
                     <h3 className="font-bold">Integration Script for this Property: {website.name}</h3>
                     <textarea
                       readOnly
-                      value={`<script src="https://pranjalscripts.github.io/integrate/embed.js?websiteId=${website.websiteId}"></script>`}
+                      value={`<script>
+                      document.addEventListener("DOMContentLoaded", () => {
+                      const s = (t, a = {}, c = "") => Object.assign(document.createElement(t), a, c ? { innerHTML: c } : {}); 
+                      const iframe = s("iframe", { src: "https://chatbot-user.vercel.app/?websiteId=${website.websiteId}", style: "position:fixed;bottom:100px;right:20px;width:350px;height:500px;border:none;z-index:9999;box-shadow:0 4px 8px rgba(0,0,0,0.2);display:none;background:white;" });
+                      const chatIcon = s("div", { className: "chat", style: "position:fixed;bottom:20px;right:20px;width:64px;height:64px;background:#1950ff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10000;" }, \`<svg width="30" height="30" fill="#fff"><circle cx="15" cy="15" r="12" stroke="none"></circle><text x="9" y="20" font-size="12">Chat</text></svg>\`);
+                      chatIcon.addEventListener("click", () => { iframe.style.display = iframe.style.display === "none" ? "block" : "none"; });
+                      document.body.append(chatIcon, iframe);
+                      });
+                      </script>`}
                       className="w-full p-2 border border-gray-300 rounded mt-2"
                     />
                   </div>
                 ))}
               </div>
+
+
+
 
               <button
                 onClick={toggleCreatePropertyModal}
