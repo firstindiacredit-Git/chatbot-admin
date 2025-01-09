@@ -988,21 +988,27 @@ const AdminPanel = () => {
           >
             <pre className="overflow-auto">
               <code>
-                {`<script>
+              {`<script>
 document.addEventListener("DOMContentLoaded", () => {
-  const s = (t, a = {}, c = "") => Object.assign(document.createElement(t), a, c ? { innerHTML: c } : {});
-  const iframe = s("iframe", {
-    src: "https://chatbot-user.vercel.app/?websiteId=${website.websiteId}",
-    style: "position:fixed;bottom:100px;right:20px;width:350px;height:500px;border:none;z-index:9999;box-shadow:0 4px 8px rgba(0,0,0,0.2);display:none;background:white;"
+  const createElement = (tag, attrs = {}, html = "") => Object.assign(document.createElement(tag), attrs, html ? { innerHTML: html } : {});
+  const getLocation = (cb) => navigator.geolocation?.getCurrentPosition(
+    ({ coords }) => cb(\`&latitude=\${coords.latitude}&longitude=\${coords.longitude}\`),
+    () => cb("")
+  ) || cb("");
+  
+  getLocation((loc) => {
+    const iframe = createElement("iframe", {
+      src: \`https://chatbot-user.vercel.app/?websiteId=${website.websiteId}\${loc}\`,
+      style: "position:fixed;bottom:100px;right:20px;width:350px;height:500px;border:none;z-index:9999;box-shadow:0 4px 8px rgba(0,0,0,0.2);display:none;background:white;",
+      allow: "geolocation"
+    });
+    const chatIcon = createElement("div", {
+      className: "chat",
+      style: "position:fixed;bottom:20px;right:20px;width:64px;height:64px;background:#1950ff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10000;",
+      onclick: () => (iframe.style.display = iframe.style.display === "none" ? "block" : "none")
+    }, \`<svg width="30" height="30" fill="#fff"><circle cx="15" cy="15" r="12"></circle><text x="9" y="20" font-size="12">Chat</text></svg>\`);
+    document.body.append(chatIcon, iframe);
   });
-  const chatIcon = s("div", {
-    className: "chat",
-    style: "position:fixed;bottom:20px;right:20px;width:64px;height:64px;background:#1950ff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10000;"
-  }, \`<svg width="30" height="30" fill="#fff"><circle cx="15" cy="15" r="12" stroke="none"></circle><text x="9" y="20" font-size="12">Chat</text></svg>\`);
-  chatIcon.addEventListener("click", () => {
-    iframe.style.display = iframe.style.display === "none" ? "block" : "none";
-  });
-  document.body.append(chatIcon, iframe);
 });
 </script>`}
               </code>
@@ -1013,19 +1019,25 @@ document.addEventListener("DOMContentLoaded", () => {
                   website._id,
                   `<script>
 document.addEventListener("DOMContentLoaded", () => {
-  const s = (t, a = {}, c = "") => Object.assign(document.createElement(t), a, c ? { innerHTML: c } : {});
-  const iframe = s("iframe", {
-    src: "https://chatbot-user.vercel.app/?websiteId=${website.websiteId}",
-    style: "position:fixed;bottom:100px;right:20px;width:350px;height:500px;border:none;z-index:9999;box-shadow:0 4px 8px rgba(0,0,0,0.2);display:none;background:white;"
+  const createElement = (tag, attrs = {}, html = "") => Object.assign(document.createElement(tag), attrs, html ? { innerHTML: html } : {});
+  const getLocation = (cb) => navigator.geolocation?.getCurrentPosition(
+    ({ coords }) => cb(\`&latitude=\${coords.latitude}&longitude=\${coords.longitude}\`),
+    () => cb("")
+  ) || cb("");
+  
+  getLocation((loc) => {
+    const iframe = createElement("iframe", {
+      src: \`https://chatbot-user.vercel.app/?websiteId=${website.websiteId}\${loc}\`,
+      style: "position:fixed;bottom:100px;right:20px;width:350px;height:500px;border:none;z-index:9999;box-shadow:0 4px 8px rgba(0,0,0,0.2);display:none;background:white;",
+      allow: "geolocation"
+    });
+    const chatIcon = createElement("div", {
+      className: "chat",
+      style: "position:fixed;bottom:20px;right:20px;width:64px;height:64px;background:#1950ff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10000;",
+      onclick: () => (iframe.style.display = iframe.style.display === "none" ? "block" : "none")
+    }, \`<svg width="30" height="30" fill="#fff"><circle cx="15" cy="15" r="12"></circle><text x="9" y="20" font-size="12">Chat</text></svg>\`);
+    document.body.append(chatIcon, iframe);
   });
-  const chatIcon = s("div", {
-    className: "chat",
-    style: "position:fixed;bottom:20px;right:20px;width:64px;height:64px;background:#1950ff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10000;"
-  }, \`<svg width="30" height="30" fill="#fff"><circle cx="15" cy="15" r="12" stroke="none"></circle><text x="9" y="20" font-size="12">Chat</text></svg>\`);
-  chatIcon.addEventListener("click", () => {
-    iframe.style.display = iframe.style.display === "none" ? "block" : "none";
-  });
-  document.body.append(chatIcon, iframe);
 });
 </script>`
                 )
