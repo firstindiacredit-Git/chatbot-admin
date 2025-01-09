@@ -1,13 +1,8 @@
 
 
-
-
-
-
-
 import { Bar } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { FaFlag } from 'react-icons/fa';
 import axios from "axios";
 import io from "socket.io-client";
@@ -35,7 +30,8 @@ const AdminPanel = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-
+  const [liveUsers, setLiveUsers] = useState(new Set()); // State to track live users
+  const [liveUserCount, setLiveUserCount] = useState(0);
   const [liveUserCounts, setLiveUserCounts] = useState([]);
   const [userCounts, setUserCounts] = useState([]);
 
@@ -48,10 +44,25 @@ const AdminPanel = () => {
   const [newServiceName, setNewServiceName] = useState("");
   const [websiteList, setWebsiteList] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
+  const createPropertyModalRef = useRef(null);
   const [propertydropdownOpen, setPropertydropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const [showAddServiceModal, setShowAddServiceModal] = useState(false);
+  const addServiceModalRef = useRef(null);
 
   const [userCountry, setUserCountry] = useState({});
+  const [searchPropertyQuery, setSearchPropertyQuery] = useState("");
+
+  const [highlightedId, setHighlightedId] = useState(null);
+
+  const handleCopy = (websiteId, code) => {
+    navigator.clipboard.writeText(code).then(() => {
+      setHighlightedId(websiteId); // Highlight the copied text
+      setTimeout(() => setHighlightedId(null), 2000); // Remove highlight after 2 seconds
+    });
+  };
+
+
 
 
   const adminId = "675980503b55ec4b1208890b"; // Static Admin ID
@@ -59,6 +70,27 @@ const AdminPanel = () => {
 
   const formatTime = (timestamp) => moment(timestamp).format('h:mm A');
   const formatDate = (timestamp) => moment(timestamp).format("MMMM DD, YYYY");
+
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setPropertydropdownOpen(false); // Close dropdown if clicked outside
+    }
+    if (addServiceModalRef.current && !addServiceModalRef.current.contains(event.target)) {
+      setShowAddServiceModal(false); // Close Add Service modal if clicked outside
+    }
+    if (createPropertyModalRef.current && !createPropertyModalRef.current.contains(event.target)) {
+      setShowCreatePropertyModal(false); // Close Create Property modal if clicked outside
+    }
+  };
+
+  useEffect(() => {
+    // Add event listener for clicks outside the dropdown
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      // Cleanup the event listener on component unmount
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const fetchUserCountry = async (latitude, longitude, userId) => {
     try {
@@ -99,6 +131,7 @@ const AdminPanel = () => {
 
       setLiveUserCounts([todayLiveUserCount, last7DaysLiveUserCount]);
       setUserCounts([todayUserCount, last7DaysUserCount]);
+      setLiveUserCount(todayLiveUserCount);
     } catch (err) {
       setError("Error fetching user counts");
     }
@@ -190,16 +223,36 @@ const AdminPanel = () => {
     setShowCreatePropertyModal(!showCreatePropertyModal);
   };
 
-  const handleSelectProperty = (property) => {
+
+  // Fetch selected property from localStorage on component mount
+  useEffect(() => {
+    const storedProperty = localStorage.getItem("selectedProperty");
+    if (storedProperty) {
+      const property = JSON.parse(storedProperty);
+      setSelectedProperty(property); // Set the selected property
+      setWebsiteName(property.name);
+      setWebsiteId(property.websiteId);
+      fetchUserCounts(property.websiteId);
+    }
+  }, []);
+
+
+
+
+  const handleSelectProperty = async (property) => {
     setSelectedProperty(property);
     //setPropertydropdownOpen(false); // Close dropdown after selection
     // Fetch users associated with the selected property if needed
     // You can implement a fetch function here to get users based on the selected property
+    
     setWebsiteId(property.websiteId);
     setWebsiteName(property.name);
+    localStorage.setItem("selectedProperty", JSON.stringify(property));
     setPropertydropdownOpen(false);
-    fetchUsersByWebsiteId(property.websiteId);
-    fetchUserCounts(property.websiteId);
+    await fetchUsersByWebsiteId(property.websiteId);
+    await fetchUserCounts(property.websiteId);
+    setSelectedUser(null);
+    setFilterUnread(false);
   };
 
   const fetchUsersByWebsiteId = async (websiteId) => {
@@ -207,11 +260,36 @@ const AdminPanel = () => {
       const response = await axios.get(`https://chatbot.pizeonfly.com/api/users?websiteId=${websiteId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       setFilteredUserss(response.data); // Update the filtered users based on the selected website ID
+
     } catch (err) {
       setError("Error fetching users for the selected property");
     }
   };
+
+
+  useEffect(() => {
+    if (selectedProperty && users.length > 0) {
+      // Filter users based on search query and selected property
+      const filtered = users.filter((user) => {
+        const matchesSearch = user.name.toLowerCase().includes(searchQuery);
+        const belongsToProperty = user.websiteId === selectedProperty.websiteId;
+        return matchesSearch && belongsToProperty;
+      });
+      setFilteredUserss(filtered);
+    }
+  }, [searchQuery, selectedProperty, users]);
+
+
+  useEffect(() => {
+    if (filterUnread && selectedProperty) {
+      const unreadFiltered = users.filter(user =>
+        user.websiteId === selectedProperty.websiteId && unreadCounts[user._id] > 0
+      );
+      setFilteredUserss(unreadFiltered);
+    }
+  }, [filterUnread, selectedProperty, unreadCounts, users]);
 
 
   useEffect(() => {
@@ -229,12 +307,16 @@ const AdminPanel = () => {
     }
   }, [selectedUser]);
 
-
   useEffect(() => {
     const newSocket = io("https://chatbot.pizeonfly.com");
     setSocket(newSocket);
 
     newSocket.emit('join_room', adminId, websiteId);
+
+    // Listen for live user updates
+    newSocket.on('live_users_update', (users) => {
+      setLiveUsers(new Set(users)); // Update live users set
+    });
 
     const fetchUsers = async () => {
       try {
@@ -429,20 +511,37 @@ const AdminPanel = () => {
   const handleFilterUnread = () => {
     setFilterUnread((prev) => !prev);
     setDropdownOpen(false);
+
+    if (!filterUnread) {
+      // If filtering for unread messages, filter users based on selected property and unread counts
+      const unreadFiltered = filteredUserss.filter(user => unreadCounts[user._id] > 0);
+      setFilteredUserss(unreadFiltered);
+    } else {
+      // Reset to show all users for the selected property
+      if (selectedProperty) {
+        const filtered = users.filter(user => user.websiteId === selectedProperty.websiteId);
+        setFilteredUserss(filtered);
+      } else {
+        // If no property is selected, clear the filtered users
+        setFilteredUserss([]);
+      }
+    }
+
   };
 
   const handleBack = () => {
     setFilterUnread(false);
     setSearchQuery(""); // Optional: Reset search query
-  };
 
-  // const filteredUsers = users.filter((user) => {
-  //   const matchesSearch = user.name.toLowerCase().includes(searchQuery);
-  //   if (filterUnread) {
-  //     return matchesSearch && unreadCounts[user._id] > 0;
-  //   }
-  //   return matchesSearch;
-  // });
+    // Reset to show all users for the selected property
+    if (selectedProperty) {
+      const filtered = users.filter(user => user.websiteId === selectedProperty.websiteId);
+      setFilteredUserss(filtered);
+    } else {
+      // If no property is selected, clear the filtered users
+      setFilteredUserss([]);
+    }
+  };
 
   const currentMessages = selectedUser ? userMessages[selectedUser] || [] : [];
 
@@ -464,7 +563,7 @@ const AdminPanel = () => {
           <img src={logoimage} alt="Logo" className="h-10 w-10 rounded-full" />
           <div className="text-xl font-bold">Admin Panel</div>
         </div>
-        <div>
+        <div className='-ml-80'>
           {selectedUser ? (
             <div>
               {/* Display the user's name */}
@@ -488,7 +587,15 @@ const AdminPanel = () => {
           )}
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-4">
+
+
+          <button
+            onClick={() => setShowAddServiceModal(true)}
+            className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600"
+          >
+            Add Service
+          </button>
 
           <div className="relative inline-block text-left">
             <button
@@ -499,195 +606,63 @@ const AdminPanel = () => {
               {/* (ID: ${selectedProperty?.websiteId}) */}
             </button>
             {propertydropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md">
-                {websiteList.map((website) => (
-                  <button
-                    key={website._id}
-                    onClick={() => {
-                      // setWebsiteName(website.name);
-                      // setSelectedProperty(website); // Set the selected property
-                      // setPropertydropdownOpen(false); // Close the dropdown after selection
-                      handleSelectProperty(website)
-                    }}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                  >
-                    {website.name}
-                    {/* (ID: {website.websiteId}) */}
-
-                  </button>
-                ))}
-
-                <div className='ml-4'>
+              <div ref={dropdownRef} className="absolute -right-24 mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-md z-50">
+                <div className="p-2">
+                  <input
+                    type="text"
+                    value={searchPropertyQuery}
+                    placeholder="Search or select a property..."
+                    className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-00"
+                    onChange={(e) => setSearchPropertyQuery(e.target.value.toLowerCase())}
+                  // Add an onChange handler if you want search functionality
+                  />
+                </div>
+                <div className="max-h-60 overflow-y-auto">
+                  {websiteList.filter(website => website.name.toLowerCase().includes(searchPropertyQuery)).map((website) => (
+                    <button
+                      key={website._id}
+                      onClick={() => {
+                        handleSelectProperty(website);
+                        setPropertydropdownOpen(false); // Close dropdown after selection
+                      }}
+                      className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      {/* Avatar with initial */}
+                      <div className="flex items-center justify-center bg-gray-400 text-white rounded-full h-8 w-8 mr-3">
+                        {website.name.charAt(0).toUpperCase()}
+                      </div>
+                      {/* Website name */}
+                      <span>{website.name}</span>
+                    </button>
+                  ))}
+                </div>
+                <div className="p-2 border-t border-gray-200">
                   <button
                     onClick={toggleCreatePropertyModal}
-                    className="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600"
+                    className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
                   >
                     Create Property
                   </button>
                 </div>
               </div>
             )}
+
           </div>
+
+
+
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600"
+          >
+            Logout
+          </button>
         </div>
-
-        {/* Create Property Modal */}
-        {showCreatePropertyModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-4 rounded-lg shadow-lg max-w-md w-full h-auto">
-              <h2 className="text-xl font-bold">Create Property</h2>
-              <form onSubmit={handleCreateProperty}>
-                <input
-                  type="text"
-                  placeholder="Website Name"
-                  value={websiteName}
-                  onChange={(e) => setWebsiteName(e.target.value)}
-                  className="w-full p-2 mb-2 border border-gray-300 rounded"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Website ID"
-                  value={websiteId}
-                  onChange={(e) => setWebsiteId(e.target.value)}
-                  className="w-full p-2 mb-2 border border-gray-300 rounded"
-                  required
-                />
-
-                <button
-                  type="submit"
-                  className="w-full bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
-                >
-                  Create Property
-                </button>
-              </form>
-
-
-
-              {/* <div className="mt-4 max-h-60 overflow-y-auto">
-                {websiteList.map((website) => (
-                  <div key={website._id} className="mb-2">
-                    <h3 className="font-bold">Integration Script for this Property: {website.name}</h3>
-                    <textarea
-                      readOnly
-                      // value={`<script src="https://pranjalscripts.github.io/integrate/embed.js/?websiteId=${website.websiteId}"></script>`}
-                      value={`<script src="https://pranjalscripts.github.io/integrate/embed.js/?websiteId=${website.websiteId}"></script>`}
-                      className="w-full p-2 border border-gray-300 rounded mt-2"
-                    />
-                  </div>
-                ))}
-              </div> */}
-
-              <div className="mt-4 max-h-60 overflow-y-auto"> {/* Set max height and enable scrolling */}
-                {websiteList.map((website) => (
-                  <div key={website._id} className="mb-2">
-                    <h3 className="font-bold">Integration Script for this Property: {website.name}</h3>
-                    <textarea
-                      readOnly
-                      value={`<script>
-                      document.addEventListener("DOMContentLoaded", () => {
-                      const s = (t, a = {}, c = "") => Object.assign(document.createElement(t), a, c ? { innerHTML: c } : {}); 
-                      const iframe = s("iframe", { src: "https://chatbot-user.vercel.app/?websiteId=${website.websiteId}", style: "position:fixed;bottom:100px;right:20px;width:350px;height:500px;border:none;z-index:9999;box-shadow:0 4px 8px rgba(0,0,0,0.2);display:none;background:white;" });
-                      const chatIcon = s("div", { className: "chat", style: "position:fixed;bottom:20px;right:20px;width:64px;height:64px;background:#1950ff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10000;" }, \`<svg width="30" height="30" fill="#fff"><circle cx="15" cy="15" r="12" stroke="none"></circle><text x="9" y="20" font-size="12">Chat</text></svg>\`);
-                      chatIcon.addEventListener("click", () => { iframe.style.display = iframe.style.display === "none" ? "block" : "none"; });
-                      document.body.append(chatIcon, iframe);
-                      });
-                      </script>`}
-                      className="w-full p-2 border border-gray-300 rounded mt-2"
-                    />
-                  </div>
-                ))}
-              </div>
-
-
-
-
-              <button
-                onClick={toggleCreatePropertyModal}
-                className="mt-2 w-full bg-gray-300 text-black px-2 py-1 rounded hover:bg-gray-400"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        )}
-
-        <button
-          onClick={() => setShowAddServiceModal(true)}
-          className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600"
-        >
-          Add Service
-        </button>
-
-        <button
-          onClick={handleLogout}
-          className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600"
-        >
-          Logout
-        </button>
       </header>
 
 
 
-      {/* Add Service Modal */}
-      {showAddServiceModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded-lg shadow-lg max-w-md w-80">
-            <h2 className="text-xl font-bold">Add Service</h2>
-            <form onSubmit={handleAddService} className="mb-4">
-              <input
-                type="text"
-                placeholder="Service Name"
-                value={serviceName}
-                onChange={(e) => setServiceName(e.target.value)}
-                className="w-full p-2 mb-2 border border-gray-300 rounded"
-                required
-              />
-              <input
-                type="text"
-                placeholder="Website ID"
-                value={websiteId}
-                onChange={(e) => setWebsiteId(e.target.value)}
-                className="w-full p-2 mb-2 border border-gray-300 rounded"
-                required
-              />
-              <button
-                type="submit"
-                className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-              >
-                Add Service
-              </button>
-            </form>
 
-            {/* Services History Section */}
-            <h2 className="text-lg font-bold mt-4">Services History</h2>
-            <div className="overflow-y-auto max-h-40"> {/* Set max height for scrolling */}
-              <table className="min-w-full border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-200">
-                    <th className="border border-gray-300 p-2">Service Name</th>
-                    <th className="border border-gray-300 p-2">Website ID</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {services.map((service) => (
-                    <tr key={service._id} className="hover:bg-gray-100">
-                      <td className="border border-gray-300 p-2">{service.name}</td>
-                      <td className="border border-gray-300 p-2">{service.websiteId}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <button
-              onClick={() => setShowAddServiceModal(false)}
-              className="mt-2 w-full bg-gray-300 text-black p-2 rounded hover:bg-gray-400"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
 
       <aside className="w-1/4 bg-gray-200 p-4 mt-24">
         <div className="sticky top-0 bg-gray-200">
@@ -752,7 +727,14 @@ const AdminPanel = () => {
               </div>
               {/* User Details */}
               <div className="flex-1">
-                <p className="font-semibold">{user.name}</p>
+
+                <p className="font-semibold flex items-center">
+                  {user.name}
+                  {liveUsers.has(user._id) && (
+                    <span className="ml-2 w-2.5 h-2.5 bg-green-500 rounded-full"></span> // Blue dot for live users
+                  )}
+                </p>
+
                 <p className="text-sm text-gray-600">{user.phone}</p>
                 <p className="text-sm text-gray-500">{user.email}</p>
                 {userCountry[user._id] && (
@@ -785,7 +767,7 @@ const AdminPanel = () => {
       </aside>
 
 
-      <div className='flex flex-col w-3/4 p-4 m-20'>
+      <div className='flex flex-col w-3/4 h-[620px] p-4 m-20'>
 
 
 
@@ -802,13 +784,17 @@ const AdminPanel = () => {
 
                 </div>
                 <div className='flex flex-col w-1/2 ml-2'>
-                  <h3 className="text-xl font-semibold">Live User Count: {liveUserCounts[0]}</h3>
-                  <h3 className="text-xl font-semibold">Last 7 Days Live User Count: {liveUserCounts[1]}</h3>
+                  {/* <h3 className="text-xl font-semibold">Live User Count: {liveUserCounts[0]-1}</h3> */}
+                  <h3 className="text-xl font-semibold">Live User Count: {Array.from(liveUsers).filter(userId =>
+                    users.find(user => user._id === userId && user.websiteId === selectedProperty.websiteId)
+                  ).length}</h3>
+                  <h3 className="text-xl font-semibold">Last 7 Days Live User Count: {liveUserCounts[1] - 1}</h3>
 
                 </div>
               </div>
             </div>
           )}
+
         </main>
 
         <main className="flex-1 flex flex-col h-2">
@@ -949,6 +935,177 @@ const AdminPanel = () => {
                   Send
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Create Property Modal */}
+        {showCreatePropertyModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div ref={createPropertyModalRef} className="bg-white w-[40%] h-auto p-6 rounded-lg shadow-xl">
+              {/* Modal Header */}
+              <h2 className="text-2xl font-semibold text-center mb-4 text-gray-700">
+                Create Property
+              </h2>
+
+              {/* Create Property Form */}
+              <form onSubmit={handleCreateProperty}>
+                <input
+                  type="text"
+                  placeholder="Website Name"
+                  value={websiteName}
+                  onChange={(e) => setWebsiteName(e.target.value)}
+                  className="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:outline-none"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Website ID"
+                  value={websiteId}
+                  onChange={(e) => setWebsiteId(e.target.value)}
+                  className="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:outline-none"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="w-full bg-blue-500 text-white font-medium py-3 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+                >
+                  Create Property
+                </button>
+              </form>
+
+              {/* Property List Section */}
+              <div className="mt-6 max-h-60 w-auto overflow-y-auto border-t border-gray-200 pt-4">
+      {websiteList.map((website) => (
+        <div key={website._id} className="mb-6">
+          <h3 className="font-medium text-gray-800 text-sm mb-2">
+            This Script for: {website.name}
+          </h3>
+          <div
+            className={`relative bg-gray-100 p-4 rounded-lg border text-sm ${
+              highlightedId === website._id ? "bg-blue-100" : "bg-gray-100"
+            }`}
+          >
+            <pre className="overflow-auto">
+              <code>
+                {`<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const s = (t, a = {}, c = "") => Object.assign(document.createElement(t), a, c ? { innerHTML: c } : {});
+  const iframe = s("iframe", {
+    src: "https://chatbot-user.vercel.app/?websiteId=${website.websiteId}",
+    style: "position:fixed;bottom:100px;right:20px;width:350px;height:500px;border:none;z-index:9999;box-shadow:0 4px 8px rgba(0,0,0,0.2);display:none;background:white;"
+  });
+  const chatIcon = s("div", {
+    className: "chat",
+    style: "position:fixed;bottom:20px;right:20px;width:64px;height:64px;background:#1950ff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10000;"
+  }, \`<svg width="30" height="30" fill="#fff"><circle cx="15" cy="15" r="12" stroke="none"></circle><text x="9" y="20" font-size="12">Chat</text></svg>\`);
+  chatIcon.addEventListener("click", () => {
+    iframe.style.display = iframe.style.display === "none" ? "block" : "none";
+  });
+  document.body.append(chatIcon, iframe);
+});
+</script>`}
+              </code>
+            </pre>
+            <button
+              onClick={() =>
+                handleCopy(
+                  website._id,
+                  `<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const s = (t, a = {}, c = "") => Object.assign(document.createElement(t), a, c ? { innerHTML: c } : {});
+  const iframe = s("iframe", {
+    src: "https://chatbot-user.vercel.app/?websiteId=${website.websiteId}",
+    style: "position:fixed;bottom:100px;right:20px;width:350px;height:500px;border:none;z-index:9999;box-shadow:0 4px 8px rgba(0,0,0,0.2);display:none;background:white;"
+  });
+  const chatIcon = s("div", {
+    className: "chat",
+    style: "position:fixed;bottom:20px;right:20px;width:64px;height:64px;background:#1950ff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10000;"
+  }, \`<svg width="30" height="30" fill="#fff"><circle cx="15" cy="15" r="12" stroke="none"></circle><text x="9" y="20" font-size="12">Chat</text></svg>\`);
+  chatIcon.addEventListener("click", () => {
+    iframe.style.display = iframe.style.display === "none" ? "block" : "none";
+  });
+  document.body.append(chatIcon, iframe);
+});
+</script>`
+                )
+              }
+              className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 text-xs rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+            >
+              Copy
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+              {/* Close Modal Button */}
+              <button
+                onClick={toggleCreatePropertyModal}
+                className="mt-4 w-full bg-gray-200 text-gray-700 font-medium py-3 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring focus:ring-gray-400"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Add Service Modal */}
+        {showAddServiceModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div ref={addServiceModalRef} className="bg-white p-4 rounded-lg shadow-lg max-w-md w-80">
+              <h2 className="text-xl font-bold">Add Service</h2>
+              <form onSubmit={handleAddService} className="mb-4">
+                <input
+                  type="text"
+                  placeholder="Service Name"
+                  value={serviceName}
+                  onChange={(e) => setServiceName(e.target.value)}
+                  className="w-full p-2 mb-2 border border-gray-300 rounded"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Website ID"
+                  value={websiteId}
+                  onChange={(e) => setWebsiteId(e.target.value)}
+                  className="w-full p-2 mb-2 border border-gray-300 rounded"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                >
+                  Add Service
+                </button>
+              </form>
+
+              {/* Services History Section */}
+              <h2 className="text-lg font-bold mt-4">Services History</h2>
+              <div className="overflow-y-auto max-h-40"> {/* Set max height for scrolling */}
+                <table className="min-w-full border-collapse border border-gray-300">
+                  <thead>
+                    <tr className="bg-gray-200">
+                      <th className="border border-gray-300 p-2">Service Name</th>
+                      <th className="border border-gray-300 p-2">Website ID</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {services.map((service) => (
+                      <tr key={service._id} className="hover:bg-gray-100">
+                        <td className="border border-gray-300 p-2">{service.name}</td>
+                        <td className="border border-gray-300 p-2">{service.websiteId}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <button
+                onClick={() => setShowAddServiceModal(false)}
+                className="mt-2 w-full bg-gray-300 text-black p-2 rounded hover:bg-gray-400"
+              >
+                Close
+              </button>
             </div>
           </div>
         )}
