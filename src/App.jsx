@@ -3,6 +3,7 @@ import AdminLogin from "./components/AdminLogin"; // Import the AdminLogin compo
 import AdminSignup from "./components/AdminSignup"; // Import the AdminSignup component
 import AdminPanel from "./components/AdminPanel"; // Import Admin Panel
 import ProtectedRoute from "./components/ProtecteRoute";
+import Landing from "./components/Landing";
 
 function App() {
   return (
@@ -12,7 +13,8 @@ function App() {
         <Route path="/signup" element={<AdminSignup />} />
         
         {/* Route for Admin Login */}
-        <Route path="/" element={<AdminLogin />} />
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<AdminLogin />} />
         
         {/* Route for Admin Dashboard/Panel */}
         <Route path="/dashboard" element={ <ProtectedRoute><AdminPanel /></ProtectedRoute>} />

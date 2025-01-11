@@ -70,7 +70,7 @@ const AdminLogin = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("https://chatbot.pizeonfly.com/api/admin/login", { username, password });
+      const response = await axios.post("http://localhost:5000/api/admin/login", { username, password });
       localStorage.setItem("adminToken", response.data.token);
       navigate("/dashboard");
     } catch (error) {

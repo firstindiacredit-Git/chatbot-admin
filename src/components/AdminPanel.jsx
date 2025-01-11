@@ -30,6 +30,8 @@ const AdminPanel = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  const [firstLiveTimes, setFirstLiveTimes] = useState({}); // State for first live times
+  const [lastLiveTimes, setLastLiveTimes] = useState({}); // State for last live times
   const [liveUsers, setLiveUsers] = useState(new Set()); // State to track live users
   const [liveUserCount, setLiveUserCount] = useState(0);
   const [liveUserCounts, setLiveUserCounts] = useState([]);
@@ -92,30 +94,13 @@ const AdminPanel = () => {
     };
   }, []);
 
-  const fetchUserCountry = async (latitude, longitude, userId) => {
-    try {
-      const response = await axios.get(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
-      const country = response.data.countryCode; // Get the country code
-      setUserCountry((prev) => ({ ...prev, [userId]: country })); // Store country code by user ID
-    } catch (error) {
-      console.error("Error fetching country data:", error);
-    }
-  };
 
-  useEffect(() => {
-    // Fetch country for each user with location data
-    filteredUserss.forEach(user => {
-      if (user.location) {
-        fetchUserCountry(user.location.latitude, user.location.longitude, user._id);
-      }
-    });
-  }, [filteredUserss]);
 
 
 
   const fetchUserCounts = async (websiteId) => {
     try {
-      const response = await axios.get(`https://chatbot.pizeonfly.com/api/admin/live-user-counts?websiteId=${websiteId}`, {
+      const response = await axios.get(`http://localhost:5000/api/admin/live-user-counts?websiteId=${websiteId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -142,7 +127,7 @@ const AdminPanel = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get("https://chatbot.pizeonfly.com/api/services", {
+        const response = await axios.get("http://localhost:5000/api/services", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setServices(response.data);
@@ -161,7 +146,7 @@ const AdminPanel = () => {
       return;
     }
     try {
-      const response = await axios.post("https://chatbot.pizeonfly.com/api/services", {
+      const response = await axios.post("http://localhost:5000/api/services", {
         name: serviceName,
         websiteId,
       }, {
@@ -180,7 +165,7 @@ const AdminPanel = () => {
     e.preventDefault();
     try {
       // Create the website and its services
-      const response = await axios.post("https://chatbot.pizeonfly.com/api/properties", {
+      const response = await axios.post("http://localhost:5000/api/properties", {
         name: websiteName,
         websiteId,
       }, {
@@ -205,7 +190,7 @@ const AdminPanel = () => {
 
   const fetchProperties = async () => {
     try {
-      const response = await axios.get("https://chatbot.pizeonfly.com/api/properties", {
+      const response = await axios.get("http://localhost:5000/api/properties", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setWebsiteList(response.data); // Update the website list with fetched properties
@@ -244,7 +229,7 @@ const AdminPanel = () => {
     //setPropertydropdownOpen(false); // Close dropdown after selection
     // Fetch users associated with the selected property if needed
     // You can implement a fetch function here to get users based on the selected property
-    
+
     setWebsiteId(property.websiteId);
     setWebsiteName(property.name);
     localStorage.setItem("selectedProperty", JSON.stringify(property));
@@ -257,7 +242,7 @@ const AdminPanel = () => {
 
   const fetchUsersByWebsiteId = async (websiteId) => {
     try {
-      const response = await axios.get(`https://chatbot.pizeonfly.com/api/users?websiteId=${websiteId}`, {
+      const response = await axios.get(`http://localhost:5000/api/users?websiteId=${websiteId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -308,7 +293,7 @@ const AdminPanel = () => {
   }, [selectedUser]);
 
   useEffect(() => {
-    const newSocket = io("https://chatbot.pizeonfly.com");
+    const newSocket = io("http://localhost:5000");
     setSocket(newSocket);
 
     newSocket.emit('join_room', adminId, websiteId);
@@ -321,7 +306,7 @@ const AdminPanel = () => {
     const fetchUsers = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("https://chatbot.pizeonfly.com/api/admin/users", {
+        const response = await axios.get("http://localhost:5000/api/admin/users", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(response.data);
@@ -369,7 +354,7 @@ const AdminPanel = () => {
     const fetchMessages = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`https://chatbot.pizeonfly.com/api/messages/${selectedUser}`, {
+        const response = await axios.get(`http://localhost:5000/api/messages/${selectedUser}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -379,7 +364,7 @@ const AdminPanel = () => {
         }));
 
         await axios.post(
-          `https://chatbot.pizeonfly.com/api/messages/mark-read/${selectedUser}`,
+          `http://localhost:5000/api/messages/mark-read/${selectedUser}`,
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -435,7 +420,7 @@ const AdminPanel = () => {
       formData.append("content", message);
       if (file) formData.append("attachment", file);
 
-      const response = await axios.post("https://chatbot.pizeonfly.com/api/message", formData, {
+      const response = await axios.post("http://localhost:5000/api/message", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
@@ -486,9 +471,52 @@ const AdminPanel = () => {
     window.location.href = "/";
   };
 
+  useEffect(() => {
+    // Load first and last live times from localStorage on component mount
+    const storedFirstLiveTimes = localStorage.getItem("firstLiveTimes");
+    const storedLastLiveTimes = localStorage.getItem("lastLiveTimes");
+
+    if (storedFirstLiveTimes) {
+      setFirstLiveTimes(JSON.parse(storedFirstLiveTimes));
+    }
+
+    if (storedLastLiveTimes) {
+      setLastLiveTimes(JSON.parse(storedLastLiveTimes));
+    }
+  }, []);
+
   const handleUserSelect = (userId) => {
     setSelectedUser(userId);
     localStorage.setItem("selectedUser", userId); // Persist selected user
+
+    const now = new Date().toISOString();
+
+    // Update last live time
+    setLastLiveTimes((prev) => {
+      const updatedLastLiveTimes = {
+        ...prev,
+        [userId]: now,
+      };
+      localStorage.setItem("lastLiveTimes", JSON.stringify(updatedLastLiveTimes)); // Save to localStorage
+      return updatedLastLiveTimes;
+    });
+
+    // Set first live time if not already set
+    setFirstLiveTimes((prev) => {
+      if (!prev[userId]) {
+        const updatedFirstLiveTimes = {
+          ...prev,
+          [userId]: now,
+        };
+        localStorage.setItem("firstLiveTimes", JSON.stringify(updatedFirstLiveTimes)); // Save to localStorage
+        return updatedFirstLiveTimes;
+      }
+      return prev;
+    });
+
+
+
+
     setUnreadCounts((prevCounts) => {
       const updatedCounts = { ...prevCounts };
       if (updatedCounts[userId]) {
@@ -556,36 +584,17 @@ const AdminPanel = () => {
 
   const groupedMessages = groupMessagesByDate(currentMessages);
 
+
+
+
   return (
     <div className="flex h-[700px] overflow-y-hidden">
-      <header className="fixed top-0 left-0 w-full bg-white-500 text-black flex items-center justify-between p-4 z-10 shadow-md">
+      <header className="fixed top-0 left-0 w-full bg-white-500 text-black flex items-center justify-between p-2 z-10 border-b ">
         <div className="flex items-center gap-4">
           <img src={logoimage} alt="Logo" className="h-10 w-10 rounded-full" />
           <div className="text-xl font-bold">Admin Panel</div>
         </div>
-        <div className='-ml-80'>
-          {selectedUser ? (
-            <div>
-              {/* Display the user's name */}
-              <span className="text-2xl font-bold">
-                {users.find((u) => u._id === selectedUser)?.name || "User"}
-              </span>
-              <br />
-              {/* Display the user's selected services */}
-              <div className="mt-0 text-lg text-gray-600">
-                {(users.find((u) => u._id === selectedUser)?.services || []).map(
-                  (service, index) => (
-                    <div key={index} className="ml-0">
-                      {service}
-                    </div>
-                  )
-                )}
-              </div>
-            </div>
-          ) : (
-            <span className="text-2xl">Select a user</span>
-          )}
-        </div>
+
 
         <div className="flex items-center gap-4">
 
@@ -661,15 +670,14 @@ const AdminPanel = () => {
       </header>
 
 
-
-
-
-      <aside className="w-1/4 bg-gray-200 p-4 mt-24">
+      <aside className="w-2/6 bg-gray-200 p-3 mt-20">
         <div className="sticky top-0 bg-gray-200">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-2">
             {/* <h2 className="text-lg font-bold">Users</h2> */}
-            <h2 className="text-lg font-bold">Users for {selectedProperty ? selectedProperty.name : "Select a Property"}</h2>
-            <h3 className="text-sm text-gray-600">Website ID: {selectedProperty ? selectedProperty.websiteId : "N/A"}</h3>
+            <div>
+              <h2 className="text-sm w-full font-bold">Users for {selectedProperty ? selectedProperty.name : "Select a Property"}</h2>
+              <h3 className="text-xs w-full text-gray-600">Website ID: {selectedProperty ? selectedProperty.websiteId : "N/A"}</h3>
+            </div>
             <div className="relative">
               {filterUnread ? (
                 <button
@@ -709,51 +717,35 @@ const AdminPanel = () => {
             className="w-full p-2 mb-4 border border-gray-300 rounded"
           />
         </div>
-        <div className="overflow-y-auto h-[450px]">
+        <div className="overflow-y-auto h-[500px]">
           {loading && <p>Loading users...</p>}
           {error && <p className="text-red-500">{error}</p>}
           {filteredUserss.map((user, index) => (
             <div
               key={user._id}
-              className={`relative flex items-center gap-3 p-2 mb-2 bg-white cursor-pointer rounded ${selectedUser === user._id ? "bg-gray-300" : ""}`}
+              className={`relative w-[99%] flex items-center gap-3 p-1 mb-1 bg-white cursor-pointer rounded ${selectedUser === user._id ? "bg-blue-400" : ""}`}
               onClick={() => handleUserSelect(user._id)}
             >
               {/* User Number */}
-              <div className="font-bold text-gray-500">{index + 1}.</div>
+              <div className="font-bold text-gray-500 min-w-5">{index + 1}.</div>
 
               {/* Avatar */}
-              <div className="w-10 h-10 flex items-center justify-center bg-gray-400 text-white font-bold rounded-full">
-                {user.name.charAt(0).toUpperCase()}
+              <div className="relative w-7 h-7 flex items-center justify-center bg-gray-400 text-white font-bold rounded-full">
+                {user.name.charAt(0).toUpperCase()
+                } {liveUsers.has(user._id) && (
+                  <span
+                    className="absolute bottom-0 -right-1 border border-2 border-white w-3 h-3 bg-green-500 rounded-full"
+                    title="Active"
+                  ></span>
+                )}
               </div>
+
               {/* User Details */}
               <div className="flex-1">
-
-                <p className="font-semibold flex items-center">
+                <p className="font-semibold uppercase flex items-center">
                   {user.name}
-                  {liveUsers.has(user._id) && (
-                    <span className="ml-2 w-2.5 h-2.5 bg-green-500 rounded-full"></span> // Blue dot for live users
-                  )}
+
                 </p>
-
-                <p className="text-sm text-gray-600">{user.phone}</p>
-                <p className="text-sm text-gray-500">{user.email}</p>
-                {userCountry[user._id] && (
-                  <>
-                    {/* Debugging: Log the country code and URL */}
-                    {console.log(`Country Code: ${userCountry[user._id]}`)}
-                    <img
-                      src={`https://flagcdn.com/w320/${userCountry[user._id].toLowerCase()}.png`} // Correct URL for flag image
-                      alt={`${userCountry[user._id]} flag`}
-                      className="w-5 h-3 inline-block ml-2"
-                      onError={(e) => {
-                        console.error(`Failed to load image: ${e.target.src}`); // Log error if image fails to load
-                        e.target.onerror = null; // Prevent looping
-                        e.target.src = 'https://via.placeholder.com/20'; // Fallback image
-                      }}
-                    />
-                  </>
-                )}
-
               </div>
               {unreadCounts[user._id] > 0 && (
                 <span className="absolute top-5 right-5 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-md transform translate-x-1/2 -translate-y-1/2">
@@ -767,35 +759,11 @@ const AdminPanel = () => {
       </aside>
 
 
-      <div className='flex flex-col w-3/4 h-[620px] p-4 m-20'>
+      <div className='flex flex-col w-3/4 h-[620px] p-4 mt-16'>
 
 
 
 
-        <main className="mb-0">
-          {/* Chart Section for User Counts */}
-          {selectedProperty && (
-            <div className="mb-0 bg-blue-50 p-2 rounded-lg shadow-sm">
-              {/* <h2 className="text-lg font-bold">User Statistics for {selectedProperty.name}</h2> */}
-              <div className="flex justify-between w-full">
-                <div className='flex flex-col w-1/2 mr-2'>
-                  <h3 className="text-xl font-semibold">Today User Count: {userCounts[0]}</h3>
-                  <h3 className="text-xl font-semibold">Last 7 Days User Count: {userCounts[1]}</h3>
-
-                </div>
-                <div className='flex flex-col w-1/2 ml-2'>
-                  {/* <h3 className="text-xl font-semibold">Live User Count: {liveUserCounts[0]-1}</h3> */}
-                  <h3 className="text-xl font-semibold">Live User Count: {Array.from(liveUsers).filter(userId =>
-                    users.find(user => user._id === userId && user.websiteId === selectedProperty.websiteId)
-                  ).length}</h3>
-                  <h3 className="text-xl font-semibold">Last 7 Days Live User Count: {liveUserCounts[1] - 1}</h3>
-
-                </div>
-              </div>
-            </div>
-          )}
-
-        </main>
 
         <main className="flex-1 flex flex-col h-2">
           {selectedUser ? (
@@ -823,7 +791,7 @@ const AdminPanel = () => {
                                   msg.attachment.endsWith(".png") ||
                                   msg.attachment.endsWith(".gif") ? (
                                   <img
-                                    src={`https://chatbot.pizeonfly.com${msg.attachment}`}
+                                    src={`http://localhost:5000${msg.attachment}`}
                                     alt="attachment"
                                     className="max-w-full h-auto rounded-md mt-2"
                                   />
@@ -831,13 +799,13 @@ const AdminPanel = () => {
                                   msg.attachment.endsWith(".webm") ||
                                   msg.attachment.endsWith(".ogg") ? (
                                   <video
-                                    src={`https://chatbot.pizeonfly.com${msg.attachment}`}
+                                    src={`http://localhost:5000${msg.attachment}`}
                                     controls
                                     className="max-w-full rounded-md mt-2"
                                   />
                                 ) : (
                                   <a
-                                    href={`https://chatbot.pizeonfly.com${msg.attachment}`}
+                                    href={`http://localhost:5000${msg.attachment}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-blue-500 underline mt-2"
@@ -888,6 +856,8 @@ const AdminPanel = () => {
             <p className="text-center text-gray-500">Select a user to start chatting</p>
           )}
         </main>
+
+
 
 
 
@@ -976,19 +946,18 @@ const AdminPanel = () => {
 
               {/* Property List Section */}
               <div className="mt-6 max-h-60 w-auto overflow-y-auto border-t border-gray-200 pt-4">
-      {websiteList.map((website) => (
-        <div key={website._id} className="mb-6">
-          <h3 className="font-medium text-gray-800 text-sm mb-2">
-            This Script for: {website.name}
-          </h3>
-          <div
-            className={`relative bg-gray-100 p-4 rounded-lg border text-sm ${
-              highlightedId === website._id ? "bg-blue-100" : "bg-gray-100"
-            }`}
-          >
-            <pre className="overflow-auto">
-              <code>
-              {`<script>
+                {websiteList.map((website) => (
+                  <div key={website._id} className="mb-6">
+                    <h3 className="font-medium text-gray-800 text-sm mb-2">
+                      This Script for: {website.name}
+                    </h3>
+                    <div
+                      className={`relative bg-gray-100 p-4 rounded-lg border text-sm ${highlightedId === website._id ? "bg-blue-100" : "bg-gray-100"
+                        }`}
+                    >
+                      <pre className="overflow-auto">
+                        <code>
+                          {`<script>
 document.addEventListener("DOMContentLoaded", () => {
   const createElement = (tag, attrs = {}, html = "") => Object.assign(document.createElement(tag), attrs, html ? { innerHTML: html } : {});
   const getLocation = (cb) => navigator.geolocation?.getCurrentPosition(
@@ -1011,13 +980,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 </script>`}
-              </code>
-            </pre>
-            <button
-              onClick={() =>
-                handleCopy(
-                  website._id,
-                  `<script>
+                        </code>
+                      </pre>
+                      <button
+                        onClick={() =>
+                          handleCopy(
+                            website._id,
+                            `<script>
 document.addEventListener("DOMContentLoaded", () => {
   const createElement = (tag, attrs = {}, html = "") => Object.assign(document.createElement(tag), attrs, html ? { innerHTML: html } : {});
   const getLocation = (cb) => navigator.geolocation?.getCurrentPosition(
@@ -1040,16 +1009,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 </script>`
-                )
-              }
-              className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 text-xs rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
-            >
-              Copy
-            </button>
-          </div>
-        </div>
-      ))}
-    </div>
+                          )
+                        }
+                        className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 text-xs rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
               {/* Close Modal Button */}
               <button
                 onClick={toggleCreatePropertyModal}
@@ -1123,6 +1092,164 @@ document.addEventListener("DOMContentLoaded", () => {
         )}
 
       </div>
+
+      <div className="w-1/3 overflow-y-auto p-4 bg-gray-100 border-l border-gray-300 mt-20">
+        <div className=''>
+          {selectedUser ? (
+            <div>
+
+              {firstLiveTimes[selectedUser] && (
+                <p className="text-sm text-gray-600">
+                  First Live: {moment(firstLiveTimes[selectedUser]).format('MMMM DD, YYYY h:mm A')}
+                </p>
+              )}
+              {lastLiveTimes[selectedUser] && (
+                <p className="text-sm text-gray-600">
+                  Last Live: {moment(lastLiveTimes[selectedUser]).format('MMMM DD, YYYY h:mm A')}
+                </p>
+              )}
+
+
+              {/* Display the user's name */}
+              <span className="text-2xl font-bold">
+                {users.find((u) => u._id === selectedUser)?.name || "User"}
+              </span>
+              <br />
+              <span className="text-sm text-gray-600">
+                {users.find((u) => u._id === selectedUser)?.email || "User"}
+              </span>
+              <br />
+              <span className="text-sm text-gray-600">
+                {users.find((u) => u._id === selectedUser)?.phone || "User"}
+              </span>
+
+              <br />
+              {/* Display the user's selected services */}
+              <div className="mt-0 text-lg text-gray-600">
+                {(users.find((u) => u._id === selectedUser)?.services || []).map(
+                  (service, index) => (
+                    <div key={index} className="ml-0">
+                      {service}
+                    </div>
+                  )
+                )}
+              </div>
+              {/* Display the user's location data */}
+              <div className="mt-4 text-lg text-gray-600 break-words">
+                <h3 className="font-semibold">Location Data:</h3>
+                <div>
+                  <p><strong>IP:</strong> {users.find((u) => u._id === selectedUser)?.location?.ip || "N/A"}</p>
+                  <p><strong>Network:</strong> {users.find((u) => u._id === selectedUser)?.location?.network || "N/A"}</p>
+                  <p><strong>Version:</strong> {users.find((u) => u._id === selectedUser)?.location?.version || "N/A"}</p>
+                  <p><strong>City:</strong> {users.find((u) => u._id === selectedUser)?.location?.city || "N/A"}</p>
+                  <p><strong>Region:</strong> {users.find((u) => u._id === selectedUser)?.location?.region || "N/A"}</p>
+                  <p><strong>Region Code:</strong> {users.find((u) => u._id === selectedUser)?.location?.region_code || "N/A"}</p>
+                  <p><strong>Country:</strong> {users.find((u) => u._id === selectedUser)?.location?.country_name || "N/A"}</p>
+                  <p><strong>Country Code:</strong> {users.find((u) => u._id === selectedUser)?.location?.country_code || "N/A"}</p>
+                  <p><strong>Country Code ISO3:</strong> {users.find((u) => u._id === selectedUser)?.location?.country_code_iso3 || "N/A"}</p>
+                  <p><strong>Country Capital:</strong> {users.find((u) => u._id === selectedUser)?.location?.country_capital || "N/A"}</p>
+                  <p><strong>Country TLD:</strong> {users.find((u) => u._id === selectedUser)?.location?.country_tld || "N/A"}</p>
+                  <p><strong>Continent Code:</strong> {users.find((u) => u._id === selectedUser)?.location?.continent_code || "N/A"}</p>
+                  <p><strong>In EU:</strong> {users.find((u) => u._id === selectedUser)?.location?.in_eu ? "Yes" : "No"}</p>
+                  <p><strong>Postal Code:</strong> {users.find((u) => u._id === selectedUser)?.location?.postal || "N/A"}</p>
+                  <p><strong>Latitude:</strong> {users.find((u) => u._id === selectedUser)?.location?.latitude || "N/A"}</p>
+                  <p><strong>Longitude:</strong> {users.find((u) => u._id === selectedUser)?.location?.longitude || "N/A"}</p>
+                  <p><strong>Timezone:</strong> {users.find((u) => u._id === selectedUser)?.location?.timezone || "N/A"}</p>
+                  <p><strong>UTC Offset:</strong> {users.find((u) => u._id === selectedUser)?.location?.utc_offset || "N/A"}</p>
+                  <p><strong>Country Calling Code:</strong> {users.find((u) => u._id === selectedUser)?.location?.country_calling_code || "N/A"}</p>
+                  <p><strong>Currency:</strong> {users.find((u) => u._id === selectedUser)?.location?.currency || "N/A"}</p>
+                  <p><strong>Currency Name:</strong> {users.find((u) => u._id === selectedUser)?.location?.currency_name || "N/A"}</p>
+                  <p><strong>Languages:</strong> {users.find((u) => u._id === selectedUser)?.location?.languages || "N/A"}</p>
+                  <p><strong>Country Area:</strong> {users.find((u) => u._id === selectedUser)?.location?.country_area || "N/A"}</p>
+                  <p><strong>Country Population:</strong> {users.find((u) => u._id === selectedUser)?.location?.country_population || "N/A"}</p>
+                  <p><strong>ASN:</strong> {users.find((u) => u._id === selectedUser)?.location?.asn || "N/A"}</p>
+                  <p><strong>Organization:</strong> {users.find((u) => u._id === selectedUser)?.location?.org || "N/A"}</p>
+                  <p><strong>Os:</strong> {users.find((u) => u._id === selectedUser)?.location?.os || "N/A"}</p>
+                  <p><strong>browser:</strong> {users.find((u) => u._id === selectedUser)?.location?.browser || "N/A"}</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <span className="text-2xl">Select a user</span>
+          )}
+        </div>
+      </div>
+
+
+      <main className="w-1/3 mt-20">
+        {/* Chart Section for User Counts */}
+        {selectedProperty && (
+          <div className="mb-0 bg-blue-50 p-2 rounded-lg shadow-sm h-[600px]">
+            {/* <h2 className="text-lg font-bold">User Statistics for {selectedProperty.name}</h2> */}
+            <div className="flex flex-col">
+              <div className='flex flex-col mr-2'>
+                <h3 className="text-xl font-semibold">Today User Count: {userCounts[0]}</h3>
+                <h3 className="text-xl font-semibold">Last 7 Days User Count: {userCounts[1]}</h3>
+                <Bar
+                  data={{
+                    labels: ['Today', 'Last 7 Days'],
+                    datasets: [
+                      {
+                        label: 'User Count',
+                        data: userCounts,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                      },
+                    ],
+                  }}
+                  options={{
+                    scales: {
+                      y: {
+                        beginAtZero: true,
+                      },
+                    },
+                  }}
+                />
+
+              </div>
+              <div className='flex flex-col mt-20'>
+                {/* <h3 className="text-xl font-semibold">Live User Count: {liveUserCounts[0]-1}</h3> */}
+                <h3 className="text-xl font-semibold">Live User Count: {Array.from(liveUsers).filter(userId =>
+                  users.find(user => user._id === userId && user.websiteId === selectedProperty.websiteId)
+                ).length}</h3>
+                <h3 className="text-xl font-semibold">Last 7 Days Live User Count: {liveUserCounts[1] - 1}</h3>
+                <Bar
+                  data={{
+                    labels: ['Today', 'Last 7 Days'],
+                    datasets: [
+                      {
+                        label: 'Live User Count',
+                        data: liveUserCounts,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                      },
+                    ],
+                  }}
+                  options={{
+                    scales: {
+                      y: {
+                        beginAtZero: true,
+                      },
+                    },
+                  }}
+                />
+
+              </div>
+            </div>
+
+          </div>
+
+        )}
+
+      </main>
+
+
+
+
+
+
 
     </div>
   );

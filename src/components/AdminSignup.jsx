@@ -18,7 +18,7 @@ const AdminSignup = () => {
     }
 
     try {
-      const response = await axios.post("https://chatbot.pizeonfly.com/api/admin/signup", {
+      const response = await axios.post("http://localhost:5000/api/admin/signup", {
         username,
         email,
         password,
@@ -76,7 +76,7 @@ const AdminSignup = () => {
         <div className="mt-4">
           <span>Already have an account?</span>
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/login")}
             className="text-blue-500 ml-2"
           >
             Login here
