@@ -964,7 +964,7 @@
 //     ({ coords }) => cb(\`&latitude=\${coords.latitude}&longitude=\${coords.longitude}\`),
 //     () => cb("")
 //   ) || cb("");
-  
+
 //   getLocation((loc) => {
 //     const iframe = createElement("iframe", {
 //       src: \`https://chatbot-user.vercel.app/?websiteId=${website.websiteId}\${loc}\`,
@@ -993,7 +993,7 @@
 //     ({ coords }) => cb(\`&latitude=\${coords.latitude}&longitude=\${coords.longitude}\`),
 //     () => cb("")
 //   ) || cb("");
-  
+
 //   getLocation((loc) => {
 //     const iframe = createElement("iframe", {
 //       src: \`https://chatbot-user.vercel.app/?websiteId=${website.websiteId}\${loc}\`,
@@ -2577,11 +2577,11 @@ const AdminPanel = () => {
 
 
         <main className="flex-1 flex flex-col h-2">
-        
+
           {selectedUser ? (
             <>
               {/* Chat Messages Container */}
-              <div 
+              <div
                 className="flex-1 overflow-y-auto border border-gray-200 rounded-lg shadow-sm mb-4 md:max-h-[calc(100vh-1rem)] max-h-[calc(100vh-13.5rem)] custom-scrollbar"
                 style={{
                   background: `
@@ -2596,7 +2596,7 @@ const AdminPanel = () => {
                   backgroundPosition: 'center'
                 }}
               >
-               
+
                 {Object.keys(groupedMessages).map((date, idx) => (
                   <div key={idx} className="px-4">
                     {/* Date Header */}
@@ -2806,28 +2806,14 @@ const AdminPanel = () => {
                       <pre className="overflow-auto">
                         <code>
                           {`<script>
-                            document.addEventListener("DOMContentLoaded", () => {
-                              const createElement = (tag, attrs = {}, html = "") => Object.assign(document.createElement(tag), attrs, html ? { innerHTML: html } : {});
-                              const getLocation = (cb) => navigator.geolocation?.getCurrentPosition(
-                                ({ coords }) => cb(\`&latitude=\${coords.latitude}&longitude=\${coords.longitude}\`),
-                                () => cb("")
-                              ) || cb("");
-                              
-                              getLocation((loc) => {
-                                const iframe = createElement("iframe", {
-                                  src: \`https://chatbot-user.vercel.app/?websiteId=${website.websiteId}\${loc}\`,
-                                  style: "position:fixed;bottom:100px;right:20px;width:350px;height:500px;border:none;z-index:9999;box-shadow:0 4px 8px rgba(0,0,0,0.2);display:none;background:white;",
-                                  allow: "geolocation"
-                                });
-                                const chatIcon = createElement("div", {
-                                  className: "chat",
-                                  style: "position:fixed;bottom:20px;right:20px;width:64px;height:64px;background:#1950ff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10000;",
-                                  onclick: () => (iframe.style.display = iframe.style.display === "none" ? "block" : "none")
-                                }, \`<svg width="30" height="30" fill="#fff"><circle cx="15" cy="15" r="12"></circle><text x="9" y="20" font-size="12">Chat</text></svg>\`);
-                                document.body.append(chatIcon, iframe);
-                              });
-                            });
-                            </script>`}
+    document.addEventListener("DOMContentLoaded", () => {
+      const s = (t, a = {}, c = "") => Object.assign(document.createElement(t), a, c ? { innerHTML: c } : {});
+      const iframe = s("iframe", { src: "https://chatbot-user.vercel.app/?websiteId=${website.websiteId}", style: "position:fixed;bottom:100px;right:20px;width:350px;height:500px;border:none;z-index:9999;box-shadow:0 4px 8px rgba(0,0,0,0.2);display:none;background:white;" });
+      const chatIcon = s("div", { className: "chat", style: "position:fixed;bottom:20px;right:20px;width:64px;height:64px;background:#1950ff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10000;" }, \`<svg width="30" height="30" fill="#fff"><circle cx="15" cy="15" r="12" stroke="none"></circle><text x="9" y="20" font-size="12"></text></svg>\`);
+      chatIcon.addEventListener("click", () => { iframe.style.display = iframe.style.display === "none" ? "block" : "none"; });
+      document.body.append(chatIcon, iframe);
+    });
+  </script>`}
                         </code>
                       </pre>
                       <button
@@ -2835,28 +2821,14 @@ const AdminPanel = () => {
                           handleCopy(
                             website._id,
                             `<script>
-                            document.addEventListener("DOMContentLoaded", () => {
-                              const createElement = (tag, attrs = {}, html = "") => Object.assign(document.createElement(tag), attrs, html ? { innerHTML: html } : {});
-                              const getLocation = (cb) => navigator.geolocation?.getCurrentPosition(
-                                ({ coords }) => cb(\`&latitude=\${coords.latitude}&longitude=\${coords.longitude}\`),
-                                () => cb("")
-                              ) || cb("");
-                              
-                              getLocation((loc) => {
-                                const iframe = createElement("iframe", {
-                                  src: \`https://chatbot-user.vercel.app/?websiteId=${website.websiteId}\${loc}\`,
-                                  style: "position:fixed;bottom:100px;right:20px;width:350px;height:500px;border:none;z-index:9999;box-shadow:0 4px 8px rgba(0,0,0,0.2);display:none;background:white;",
-                                  allow: "geolocation"
-                                });
-                                const chatIcon = createElement("div", {
-                                  className: "chat",
-                                  style: "position:fixed;bottom:20px;right:20px;width:64px;height:64px;background:#1950ff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10000;",
-                                  onclick: () => (iframe.style.display = iframe.style.display === "none" ? "block" : "none")
-                                }, \`<svg width="30" height="30" fill="#fff"><circle cx="15" cy="15" r="12"></circle><text x="9" y="20" font-size="12">Chat</text></svg>\`);
-                                document.body.append(chatIcon, iframe);
-                              });
-                            });
-                            </script>`
+    document.addEventListener("DOMContentLoaded", () => {
+      const s = (t, a = {}, c = "") => Object.assign(document.createElement(t), a, c ? { innerHTML: c } : {});
+      const iframe = s("iframe", { src: "https://chatbot-user.vercel.app/?websiteId=${website.websiteId}", style: "position:fixed;bottom:100px;right:20px;width:350px;height:500px;border:none;z-index:9999;box-shadow:0 4px 8px rgba(0,0,0,0.2);display:none;background:white;" });
+      const chatIcon = s("div", { className: "chat", style: "position:fixed;bottom:20px;right:20px;width:64px;height:64px;background:#1950ff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10000;" }, \`<svg width="30" height="30" fill="#fff"><circle cx="15" cy="15" r="12" stroke="none"></circle><text x="9" y="20" font-size="12"></text></svg>\`);
+      chatIcon.addEventListener("click", () => { iframe.style.display = iframe.style.display === "none" ? "block" : "none"; });
+      document.body.append(chatIcon, iframe);
+    });
+  </script>`
                           )
                         }
                         className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 text-xs rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
@@ -2867,6 +2839,7 @@ const AdminPanel = () => {
                   </div>
                 ))}
               </div>
+
               {/* Close Modal Button */}
               <button
                 onClick={toggleCreatePropertyModal}
@@ -3142,8 +3115,8 @@ const AdminPanel = () => {
 
       {/* User Details Section */}
 
-      
-      
+
+
 
       <div
         className={`w-full lg:w-3/4 md:overflow-y-scroll h-screen custom-scrollbar p-4 pb-20 bg-gradient-to-r from-green-100 to-sky-200 border-l border-gray-200 md:mt-16 ${activeMobileSection === 'details' ? 'block' : 'hidden lg:block'
@@ -3247,7 +3220,7 @@ const AdminPanel = () => {
                     </div>
                     <div className="flex justify-between p-3 bg-white rounded-md">
                       <span className="text-gray-600">Organization</span>
-                      <span className="font-medium">{users.find((u) => u._id === selectedUser)?.location?.organizationName
+                      <span className="font-medium">{users.find((u) => u._id === selectedUser)?.location?.organization
                         || "Unknown"}</span>
                     </div>
                   </div>
@@ -3370,7 +3343,7 @@ const AdminPanel = () => {
                       <p>📏 Area: {users.find((u) => u._id === selectedUser)?.location?.country_area?.toLocaleString() || "Unknown"} km²</p>
                       <p>🌍 In EU: {users.find((u) => u._id === selectedUser)?.location?.in_eu ? "Yes" : "No"}</p>
                       <p className="text-sm">🗣️ {users.find((u) => u._id === selectedUser)?.location?.languages || "Unknown"}</p>
-                      
+
                     </div>
                   </div>
                 </div>
