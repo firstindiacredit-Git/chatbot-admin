@@ -12,16 +12,17 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ['axios', 'lucide-react'],
+      external: ['axios', 'lucide-react', 'socket.io-client'],
       output: {
         globals: {
           axios: 'axios',
-          'lucide-react': 'lucide'
+          'lucide-react': 'lucide',
+          'socket.io-client': 'io'
         }
       }
     }
   },
   optimizeDeps: {
-    include: ['axios', 'lucide-react']
+    include: ['axios', 'lucide-react', 'socket.io-client']
   }
 }) 
