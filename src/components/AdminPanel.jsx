@@ -3239,7 +3239,7 @@ const AdminPanel = () => {
                   <div className="space-y-3">
                     <div className="flex justify-between p-3 bg-white rounded-md">
                       <span className="text-gray-600">IP Address</span>
-                      <span className="font-medium">{users.find((u) => u._id === selectedUser)?.location?.query || "Unknown"}</span>
+                      <span className="font-medium">{users.find((u) => u._id === selectedUser)?.location?.ip || "Unknown"}</span>
                     </div>
                     <div className="flex justify-between p-3 bg-white rounded-md">
                       <span className="text-gray-600">Network</span>
@@ -3247,7 +3247,8 @@ const AdminPanel = () => {
                     </div>
                     <div className="flex justify-between p-3 bg-white rounded-md">
                       <span className="text-gray-600">Organization</span>
-                      <span className="font-medium">{users.find((u) => u._id === selectedUser)?.location?.org || "Unknown"}</span>
+                      <span className="font-medium">{users.find((u) => u._id === selectedUser)?.location?.organizationName
+                        || "Unknown"}</span>
                     </div>
                   </div>
                 </div>
@@ -3288,10 +3289,10 @@ const AdminPanel = () => {
                     <div className="bg-green-50 p-3 rounded-lg">
                       <p className="font-semibold mb-2 text-green-700">Coordinates</p>
                       <p className="text-sm">
-                        📍 Lat: {users.find((u) => u._id === selectedUser)?.location?.lat || "Unknown"}
+                        📍 Lat: {users.find((u) => u._id === selectedUser)?.location?.latitude || "Unknown"}
                       </p>
                       <p className="text-sm">
-                        📍 Long: {users.find((u) => u._id === selectedUser)?.location?.lon || "Unknown"}
+                        📍 Long: {users.find((u) => u._id === selectedUser)?.location?.longitude || "Unknown"}
                       </p>
                     </div>
                   </div>
