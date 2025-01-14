@@ -12,15 +12,16 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ['axios'],
+      external: ['axios', 'lucide-react'],
       output: {
         globals: {
-          axios: 'axios'
+          axios: 'axios',
+          'lucide-react': 'lucide'
         }
       }
     }
   },
   optimizeDeps: {
-    include: ['axios']
+    include: ['axios', 'lucide-react']
   }
 }) 
