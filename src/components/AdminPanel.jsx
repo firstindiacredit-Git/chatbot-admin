@@ -2074,13 +2074,13 @@ const AdminPanel = () => {
                   <p className="text-xs text-gray-500">{selectedProperty?.name || 'No property selected'}</p>
                 </div>
               </div>
-            </div>
+        </div>
 
             {/* Center section - Property Selection and Search */}
             <div className="flex-1 max-w-2xl mx-4">
               <div className="relative">
-                <button
-                  onClick={() => setPropertydropdownOpen(!propertydropdownOpen)}
+            <button
+              onClick={() => setPropertydropdownOpen(!propertydropdownOpen)}
                   className="w-full flex items-center justify-between px-4 py-2 bg-white border border-gray-300 rounded-lg hover:border-blue-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <div className="flex items-center space-x-3">
@@ -2092,41 +2092,41 @@ const AdminPanel = () => {
                     <span className="text-gray-700">{websiteName || "Select Property"}</span>
                   </div>
                   <FaChevronDown className={`transition-transform duration-200 ${propertydropdownOpen ? 'transform rotate-180' : ''}`} />
-                </button>
+            </button>
 
                 {/* Property Dropdown */}
-                {propertydropdownOpen && (
+            {propertydropdownOpen && (
                   <div ref={dropdownRef} className="absolute w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                     <div className="p-3 border-b">
                       <div className="relative">
                         <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                        <input
-                          type="text"
-                          value={searchPropertyQuery}
+                  <input
+                    type="text"
+                    value={searchPropertyQuery}
                           placeholder="Search properties..."
                           className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          onChange={(e) => setSearchPropertyQuery(e.target.value.toLowerCase())}
-                        />
-                      </div>
+                    onChange={(e) => setSearchPropertyQuery(e.target.value.toLowerCase())}
+                  />
+                </div>
                     </div>
 
                     <div className="max-h-[60vh] overflow-y-auto custom-scrollbar">
                       {websiteList
                         .filter(website => website.name.toLowerCase().includes(searchPropertyQuery))
                         .map((website) => (
-                          <button
-                            key={website._id}
+                    <button
+                      key={website._id}
                             onClick={() => handleSelectProperty(website)}
                             className="flex items-center justify-between w-full px-4 py-3 hover:bg-gray-50 transition-colors"
                           >
                             <div className="flex items-center">
-                              <div className="flex items-center justify-center bg-gray-100 text-gray-600 rounded-full h-10 w-10 mr-3">
-                                {website.name.charAt(0).toUpperCase()}
-                              </div>
-                              <div className="text-left">
-                                <p className="font-medium text-gray-700">{website.name}</p>
-                                <p className="text-xs text-gray-500">ID: {website.websiteId}</p>
-                              </div>
+                            <div className="flex items-center justify-center bg-gray-100 text-gray-600 rounded-full h-10 w-10 mr-3">
+                        {website.name.charAt(0).toUpperCase()}
+                      </div>
+                            <div className="text-left">
+                              <p className="font-medium text-gray-700">{website.name}</p>
+                              <p className="text-xs text-gray-500">ID: {website.websiteId}</p>
+                            </div>
                             </div>
                             <div className="flex items-center gap-2">
                               <span className="flex items-center gap-1 px-2 py-1 bg-green-50 text-green-600 rounded-full text-xs font-medium">
@@ -2134,21 +2134,21 @@ const AdminPanel = () => {
                                 {getLiveUsersForProperty(website.websiteId)}
                               </span>
                             </div>
-                          </button>
-                        ))}
-                    </div>
+                    </button>
+                  ))}
+                </div>
 
                     <div className="p-3 border-t bg-gray-50">
-                      <button
-                        onClick={toggleCreatePropertyModal}
+                  <button
+                    onClick={toggleCreatePropertyModal}
                         className="flex items-center justify-center w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                      >
+                  >
                         <FaPlus className="mr-2" />
                         Create New Property
-                      </button>
-                    </div>
-                  </div>
-                )}
+                  </button>
+                </div>
+              </div>
+            )}
               </div>
             </div>
 
@@ -2183,7 +2183,7 @@ const AdminPanel = () => {
                     </span>
                   )}
                 </button>
-              </div>
+          </div>
 
               {/* Settings */}
               <button className="p-2 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-100 transition-colors">
@@ -2206,13 +2206,13 @@ const AdminPanel = () => {
                       <a href="#profile" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
                       <a href="#settings" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a>
                       <hr className="my-1" />
-                      <button
-                        onClick={handleLogout}
+          <button
+            onClick={handleLogout}
                         className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 flex items-center"
-                      >
+          >
                         <FaSignOutAlt className="mr-2" />
-                        Logout
-                      </button>
+            Logout
+          </button>
                     </div>
                   </div>
                 )}
@@ -2220,14 +2220,14 @@ const AdminPanel = () => {
             </div>
           </div>
         </div>
-      </div>
+                    </div>
 
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50">
         <div className="flex items-center justify-between px-4 h-16">
           <div className="flex items-center gap-3">
             <img src={logoimage} alt="Logo" className="h-6" />
-          </div>
+                  </div>
 
           <div className="flex items-center gap-2">
             <button
@@ -2249,7 +2249,7 @@ const AdminPanel = () => {
               <FaBars className="w-5 h-5" />
             </button>
           </div>
-        </div>
+              </div>
 
         {/* Mobile Menu Dropdown */}
         {isMobileMenuOpen && (
@@ -2265,7 +2265,7 @@ const AdminPanel = () => {
                       {selectedProperty && (
                         <div className="flex items-center justify-center bg-blue-100 text-blue-600 rounded-full h-8 w-8">
                           {websiteName?.charAt(0).toUpperCase()}
-                        </div>
+            </div>
                       )}
                       <span className="text-gray-700">{websiteName || "Select Property"}</span>
                     </div>
@@ -2286,7 +2286,7 @@ const AdminPanel = () => {
                             onChange={(e) => setSearchPropertyQuery(e.target.value.toLowerCase())}
                           />
                         </div>
-                      </div>
+          </div>
 
                       <div className="max-h-[60vh] overflow-y-auto custom-scrollbar">
                         {websiteList
@@ -2300,7 +2300,7 @@ const AdminPanel = () => {
                               <div className="flex items-center">
                                 <div className="flex items-center justify-center bg-gray-100 text-gray-600 rounded-full h-10 w-10 mr-3">
                                   {website.name.charAt(0).toUpperCase()}
-                                </div>
+        </div>
                                 <div className="text-left">
                                   <p className="font-medium text-gray-700">{website.name}</p>
                                   <p className="text-xs text-gray-500">ID: {website.websiteId}</p>
@@ -2482,15 +2482,15 @@ const AdminPanel = () => {
 
           {/* Search Bar */}
           <div className="relative">
-            <input
-              type="text"
-              placeholder="Search users..."
-              value={searchQuery}
-              onChange={handleSearchChange}
+          <input
+            type="text"
+            placeholder="Search users..."
+            value={searchQuery}
+            onChange={handleSearchChange}
               className="w-full pl-10 pr-2 py-1.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all"
-            />
+          />
             <FaSearch className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          </div>
+        </div>
         </div>
 
         {/* Users List */}
@@ -2608,7 +2608,7 @@ const AdminPanel = () => {
 
                     {/* Messages for the Date */}
                     <div className="space-y-4 py-4">
-                      {groupedMessages[date].map((msg, index) => (
+                    {groupedMessages[date].map((msg, index) => (
                         <div key={index}
                           className={`flex ${msg.senderId === adminId ? 'justify-end' : 'justify-start'}`}
                         >
@@ -2628,43 +2628,43 @@ const AdminPanel = () => {
                               )}
 
                               {/* Attachments */}
-                              {msg.attachment && (
+                            {msg.attachment && (
                                 <div className="mt-2">
                                   {msg.attachment.match(/\.(jpg|jpeg|png|gif)$/i) ? (
                                     <img
                                       src={`https://chatbot.pizeonfly.com${msg.attachment}`}
-                                      alt="attachment"
+                                    alt="attachment"
                                       className="max-w-full rounded-lg border border-gray-100 shadow-sm"
                                       loading="lazy"
-                                    />
+                                  />
                                   ) : msg.attachment.match(/\.(mp4|webm|ogg)$/i) ? (
-                                    <video
+                                  <video
                                       src={`https://chatbot.pizeonfly.com${msg.attachment}`}
-                                      controls
+                                    controls
                                       className="max-w-full rounded-lg border border-gray-100 shadow-sm"
-                                    />
-                                  ) : (
-                                    <a
+                                  />
+                                ) : (
+                                  <a
                                       href={`https://chatbot.pizeonfly.com${msg.attachment}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                       className="flex items-center gap-2 text-sm text-blue-500 hover:text-blue-600 bg-blue-50 px-3 py-2 rounded-lg"
-                                    >
+                                  >
                                       <FaPaperclip className="text-blue-400" />
-                                      View Attachment
-                                    </a>
-                                  )}
+                                    View Attachment
+                                  </a>
+                                )}
                                 </div>
-                              )}
-                            </div>
+                            )}
+                          </div>
 
                             {/* Timestamp */}
                             <span className="text-xs text-gray-400 mt-1 px-2">
-                              {formatTime(msg.createdAt)}
-                            </span>
-                          </div>
+                            {formatTime(msg.createdAt)}
+                          </span>
                         </div>
-                      ))}
+                      </div>
+                    ))}
                     </div>
                   </div>
                 ))}
@@ -2673,12 +2673,12 @@ const AdminPanel = () => {
               {/* Message Input Area */}
               <div className="bg-white p-1 rounded-full border border-gray-200 shadow-sm">
                 <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyDown={handleKeyPress}
-                    placeholder="Type your message..."
+                <input
+                  type="text"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                  placeholder="Type your message..."
                     className="flex-1 px-4 py-2.5 bg-gray-50 rounded-full outline-none focus:outline-none border-none focus:ring-0 placeholder:text-gray-400"
                   />
 
@@ -2687,20 +2687,20 @@ const AdminPanel = () => {
                     className="p-2.5 bg-gray-200 text-gray-500 hover:bg-gray-300 rounded-full cursor-pointer transition-colors"
                   >
                     <FaPaperclip className="w-5 h-5" />
-                  </label>
-                  <input
-                    id="file-input"
-                    type="file"
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
+                </label>
+                <input
+                  id="file-input"
+                  type="file"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
 
-                  <button
-                    onClick={handleSendMessage}
+                <button
+                  onClick={handleSendMessage}
                     className="p-2.5 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors flex items-center justify-center"
-                  >
+                >
                     <FaPaperPlane className="w-5 h-5" />
-                  </button>
+                </button>
                 </div>
               </div>
             </>
@@ -2806,14 +2806,14 @@ const AdminPanel = () => {
                       <pre className="overflow-auto">
                         <code>
                           {`<script>
-    document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
       const s = (t, a = {}, c = "") => Object.assign(document.createElement(t), a, c ? { innerHTML: c } : {});
       const iframe = s("iframe", { src: "https://chatbot-user.vercel.app/?websiteId=${website.websiteId}", style: "position:fixed;bottom:100px;right:20px;width:350px;height:500px;border:none;z-index:9999;box-shadow:0 4px 8px rgba(0,0,0,0.2);display:none;background:white;" });
       const chatIcon = s("div", { className: "chat", style: "position:fixed;bottom:20px;right:20px;width:64px;height:64px;background:#1950ff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10000;" }, \`<svg width="30" height="30" fill="#fff"><circle cx="15" cy="15" r="12" stroke="none"></circle><text x="9" y="20" font-size="12"></text></svg>\`);
       chatIcon.addEventListener("click", () => { iframe.style.display = iframe.style.display === "none" ? "block" : "none"; });
-      document.body.append(chatIcon, iframe);
-    });
-  </script>`}
+    document.body.append(chatIcon, iframe);
+});
+</script>`}
                         </code>
                       </pre>
                       <button
@@ -2821,14 +2821,14 @@ const AdminPanel = () => {
                           handleCopy(
                             website._id,
                             `<script>
-    document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
       const s = (t, a = {}, c = "") => Object.assign(document.createElement(t), a, c ? { innerHTML: c } : {});
       const iframe = s("iframe", { src: "https://chatbot-user.vercel.app/?websiteId=${website.websiteId}", style: "position:fixed;bottom:100px;right:20px;width:350px;height:500px;border:none;z-index:9999;box-shadow:0 4px 8px rgba(0,0,0,0.2);display:none;background:white;" });
       const chatIcon = s("div", { className: "chat", style: "position:fixed;bottom:20px;right:20px;width:64px;height:64px;background:#1950ff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10000;" }, \`<svg width="30" height="30" fill="#fff"><circle cx="15" cy="15" r="12" stroke="none"></circle><text x="9" y="20" font-size="12"></text></svg>\`);
       chatIcon.addEventListener("click", () => { iframe.style.display = iframe.style.display === "none" ? "block" : "none"; });
-      document.body.append(chatIcon, iframe);
-    });
-  </script>`
+    document.body.append(chatIcon, iframe);
+});
+</script>`
                           )
                         }
                         className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 text-xs rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
@@ -2879,36 +2879,36 @@ const AdminPanel = () => {
                 <form onSubmit={handleAddService} className="space-y-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Service Name</label>
-                    <input
-                      type="text"
-                      placeholder="Service Name"
-                      value={serviceName}
-                      onChange={(e) => setServiceName(e.target.value)}
+                <input
+                  type="text"
+                  placeholder="Service Name"
+                  value={serviceName}
+                  onChange={(e) => setServiceName(e.target.value)}
                       className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all"
-                      required
-                    />
+                  required
+                />
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Website ID</label>
-                    <input
-                      type="text"
-                      placeholder="Website ID"
-                      value={websiteId}
-                      onChange={(e) => setWebsiteId(e.target.value)}
+                <input
+                  type="text"
+                  placeholder="Website ID"
+                  value={websiteId}
+                  onChange={(e) => setWebsiteId(e.target.value)}
                       className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all"
-                      required
-                    />
+                  required
+                />
                   </div>
 
                   <div className="flex gap-3 mt-6">
-                    <button
-                      type="submit"
+                <button
+                  type="submit"
                       className="flex-1 bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 font-medium transition-colors flex items-center justify-center gap-2"
-                    >
+                >
                       <FaPlus className="w-4 h-4" />
-                      Add Service
-                    </button>
+                  Add Service
+                </button>
                     <button
                       type="button"
                       onClick={() => setShowAddServiceModal(false)}
@@ -2917,29 +2917,29 @@ const AdminPanel = () => {
                       Cancel
                     </button>
                   </div>
-                </form>
+              </form>
 
-                {/* Services History Section */}
+              {/* Services History Section */}
                 <div className="mt-8">
                   <h3 className="text-lg font-bold text-gray-800 mb-4">Services History</h3>
                   <div className="overflow-y-auto max-h-64 custom-scrollbar rounded-lg border border-gray-200">
                     <table className="min-w-full divide-y divide-gray-200">
-                      <thead>
+                  <thead>
                         <tr className="bg-gray-50">
                           <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service Name</th>
                           <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website ID</th>
-                        </tr>
-                      </thead>
+                    </tr>
+                  </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {services.map((service) => (
+                    {services.map((service) => (
                           <tr key={service._id} className="hover:bg-gray-50 transition-colors">
                             <td className="px-4 py-3 text-sm text-gray-900">{service.name}</td>
                             <td className="px-4 py-3 text-sm text-gray-500">{service.websiteId}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
                 </div>
               </div>
             </div>
@@ -2951,12 +2951,12 @@ const AdminPanel = () => {
             <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
               <div className="p-2 border-b border-gray-200 flex justify-between items-center">
                 <h2 className="text-xl font-semibold text-gray-800">User Statistics</h2>
-                <button
+              <button
                   onClick={() => setShowChartModal(false)}
                   className="p-2 hover:bg-gray-100 rounded-full"
-                >
+              >
                   <FaTimes className="w-5 h-5 text-gray-500" />
-                </button>
+              </button>
               </div>
 
               <div className="p-4">
@@ -3122,7 +3122,7 @@ const AdminPanel = () => {
         className={`w-full lg:w-3/4 md:overflow-y-scroll h-screen custom-scrollbar p-4 pb-20 bg-gradient-to-r from-green-100 to-sky-200 border-l border-gray-200 md:mt-16 ${activeMobileSection === 'details' ? 'block' : 'hidden lg:block'
           }`}
       >
-        {selectedUser ? (
+          {selectedUser ? (
           <div className="space-y-4">
             {/* User Header Section */}
             <div className="bg-white p-4 rounded-lg shadow-sm">
@@ -3130,7 +3130,7 @@ const AdminPanel = () => {
                 <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl font-semibold">
                   {users.find((u) => u._id === selectedUser)?.name?.charAt(0).toUpperCase()}
                 </div>
-                <div>
+            <div>
                   <h2 className="text-md capitalize font-semibold text-gray-800">
                     {users.find((u) => u._id === selectedUser)?.name || "User"}
                   </h2>
@@ -3187,14 +3187,14 @@ const AdminPanel = () => {
                   ))}
                   {(users.find((u) => u._id === selectedUser)?.services || []).length === 0 && (
                     <p className="text-gray-500 text-sm">No services selected</p>
-                  )}
-                </div>
+                )}
+              </div>
               )}
             </div>
-
-            {/* Basic Information Section */}
+                
+                {/* Basic Information Section */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <button
+                  <button 
                 onClick={() => setExpandedSections(prev => ({ ...prev, basic: !prev.basic }))}
                 className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
               >
@@ -3205,9 +3205,9 @@ const AdminPanel = () => {
                   <span className="font-semibold text-gray-700">Basic Information</span>
                 </div>
                 {expandedSections.basic ? <FaChevronDown className="text-gray-400" /> : <FaChevronRight className="text-gray-400" />}
-              </button>
-
-              {expandedSections.basic && (
+                  </button>
+                  
+                  {expandedSections.basic && (
                 <div className="p-4 bg-gray-50 border-t">
                   <div className="space-y-3">
                     <div className="flex justify-between p-3 bg-white rounded-md">
@@ -3224,13 +3224,13 @@ const AdminPanel = () => {
                         || "Unknown"}</span>
                     </div>
                   </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
 
             {/* Location Section */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <button
+                  <button 
                 onClick={() => setExpandedSections((prev) => ({ ...prev, location: !prev.location }))}
                 className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
               >
@@ -3245,12 +3245,12 @@ const AdminPanel = () => {
                 ) : (
                   <FaChevronRight className="text-gray-400" />
                 )}
-              </button>
-
-              {expandedSections.location && (
+                  </button>
+                  
+                  {expandedSections.location && (
                 <div className="p-4 bg-gray-50 border-t space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-blue-50 p-3 rounded-lg">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-blue-50 p-3 rounded-lg">
                       <p className="font-semibold mb-2 text-blue-700">City & Region</p>
                       <p className="text-sm">
                         🏙️ {users.find((u) => u._id === selectedUser)?.location?.city || "Unknown"}
@@ -3258,8 +3258,8 @@ const AdminPanel = () => {
                       <p className="text-sm">
                         📍 {users.find((u) => u._id === selectedUser)?.location?.region || "Unknown"}
                       </p>
-                    </div>
-                    <div className="bg-green-50 p-3 rounded-lg">
+                        </div>
+                        <div className="bg-green-50 p-3 rounded-lg">
                       <p className="font-semibold mb-2 text-green-700">Coordinates</p>
                       <p className="text-sm">
                         📍 Lat: {users.find((u) => u._id === selectedUser)?.location?.latitude || "Unknown"}
@@ -3267,14 +3267,14 @@ const AdminPanel = () => {
                       <p className="text-sm">
                         📍 Long: {users.find((u) => u._id === selectedUser)?.location?.longitude || "Unknown"}
                       </p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
-              )}
-            </div>
             {/* System Information Section */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <button
+                  <button 
                 onClick={() => setExpandedSections(prev => ({ ...prev, technical: !prev.technical }))}
                 className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
               >
@@ -3285,29 +3285,29 @@ const AdminPanel = () => {
                   <span className="font-semibold text-gray-700">System Information</span>
                 </div>
                 {expandedSections.technical ? <FaChevronDown className="text-gray-400" /> : <FaChevronRight className="text-gray-400" />}
-              </button>
-
-              {expandedSections.technical && (
+                  </button>
+                  
+                  {expandedSections.technical && (
                 <div className="p-4 bg-gray-50 border-t">
-                  <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white p-3 rounded-lg shadow-sm">
                       <p className="font-semibold mb-2 text-gray-700">Device Info</p>
                       <p className="text-sm">💻 OS: {users.find((u) => u._id === selectedUser)?.location?.os || "Unknown"}</p>
                       <p className="text-sm">🌐 Browser: {users.find((u) => u._id === selectedUser)?.location?.browser || "Unknown"}</p>
-                    </div>
+                        </div>
                     <div className="bg-white p-3 rounded-lg shadow-sm">
                       <p className="font-semibold mb-2 text-gray-700">Network Info</p>
                       <p className="text-sm">🔌 ASN: {users.find((u) => u._id === selectedUser)?.location?.asn || "Unknown"}</p>
                       <p className="text-sm">🌐 Version: {users.find((u) => u._id === selectedUser)?.location?.version || "Unknown"}</p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
-              )}
-            </div>
 
-            {/* Regional Information Section */}
+                {/* Regional Information Section */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <button
+                  <button 
                 onClick={() => setExpandedSections(prev => ({ ...prev, regional: !prev.regional }))}
                 className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
               >
@@ -3318,47 +3318,47 @@ const AdminPanel = () => {
                   <span className="font-semibold text-gray-700">Regional Information</span>
                 </div>
                 {expandedSections.regional ? <FaChevronDown className="text-gray-400" /> : <FaChevronRight className="text-gray-400" />}
-              </button>
-
-              {expandedSections.regional && (
+                  </button>
+                  
+                  {expandedSections.regional && (
                 <div className="p-4 bg-gray-50 border-t space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-purple-50 p-3 rounded-lg">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-purple-50 p-3 rounded-lg">
                       <p className="font-semibold mb-2 text-purple-700">Country Details</p>
                       <p className="text-sm">🏳️ {users.find((u) => u._id === selectedUser)?.location?.country || "Unknown"}</p>
                       <p className="text-sm">🏛️ Capital: {users.find((u) => u._id === selectedUser)?.location?.countryCode || "Unknown"}</p>
                       <p className="text-sm">📞 {users.find((u) => u._id === selectedUser)?.location?.country_calling_code || "Unknown"}</p>
-                    </div>
-                    <div className="bg-yellow-50 p-3 rounded-lg">
+                        </div>
+                        <div className="bg-yellow-50 p-3 rounded-lg">
                       <p className="font-semibold mb-2 text-yellow-700">Currency & Language</p>
                       <p className="text-sm">💰 {users.find((u) => u._id === selectedUser)?.location?.currency_name || "Unknown"}</p>
                       <p>⏰ Timezone: {users.find((u) => u._id === selectedUser)?.location?.timezone || "Unknown"}</p>
-                    </div>
-                  </div>
-
+                        </div>
+                      </div>
+                      
                   <div className="bg-blue-50 p-3 rounded-lg">
                     <p className="font-semibold mb-2 text-blue-700">Additional Information</p>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <p>👥 Population: {users.find((u) => u._id === selectedUser)?.location?.country_population?.toLocaleString() || "Unknown"}</p>
                       <p>📏 Area: {users.find((u) => u._id === selectedUser)?.location?.country_area?.toLocaleString() || "Unknown"} km²</p>
-                      <p>🌍 In EU: {users.find((u) => u._id === selectedUser)?.location?.in_eu ? "Yes" : "No"}</p>
+                          <p>🌍 In EU: {users.find((u) => u._id === selectedUser)?.location?.in_eu ? "Yes" : "No"}</p>
                       <p className="text-sm">🗣️ {users.find((u) => u._id === selectedUser)?.location?.languages || "Unknown"}</p>
 
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
-              )}
-            </div>
 
-          </div>
-        ) : (
+            </div>
+          ) : (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <FaUser className="w-8 h-8 text-gray-400" />
-              </div>
+        </div>
               <p className="text-gray-500 font-medium">Select a user to view details</p>
-            </div>
+      </div>
           </div>
         )}
       </div>;
