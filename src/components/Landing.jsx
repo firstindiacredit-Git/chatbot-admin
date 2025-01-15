@@ -8,15 +8,16 @@ import getFrontImg from '../assets/get-front.svg';
 
 function Landing() {
     const navigate = useNavigate();
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white">
+        <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white w-full overflow-x-hidden">
             {/* Enhanced Hero Section */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px]"></div>
-            <div className="absolute inset-0">
-                <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-                <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-emerald-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+            <div className="absolute inset-0 w-full bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px]"></div>
+            <div className="absolute inset-0 w-full overflow-hidden">
+                <div className="absolute -top-24 -right-24 w-64 md:w-96 h-64 md:h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+                <div className="absolute -bottom-24 -left-24 w-64 md:w-96 h-64 md:h-96 bg-emerald-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 md:w-96 h-64 md:h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
             </div>
 
             {/* Navigation */}
@@ -31,9 +32,23 @@ function Landing() {
                                     <span className="ml-2 text-xl font-bold bg-gradient-to-r from-blue-400 to-emerald-400 text-transparent bg-clip-text">ChatFlow</span>
                                 </div>
                             </div>
-                    </div>
-                    
-                        {/* Navigation Links */}
+                        </div>
+
+                        {/* Mobile Menu Button */}
+                        <button 
+                            className="md:hidden p-2 rounded-lg border border-white/10 hover:bg-white/5"
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                {isMobileMenuOpen ? (
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                ) : (
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                )}
+                            </svg>
+                        </button>
+
+                        {/* Desktop Navigation */}
                         <div className="hidden md:flex items-center gap-8">
                             {['Features', 'Solutions', 'Pricing'].map((item) => (
                                 <a 
@@ -63,15 +78,42 @@ function Landing() {
                         </button>
                         </div>
                     </div>
+
+                    {/* Mobile Menu */}
+                    <div className={`${isMobileMenuOpen ? 'flex' : 'hidden'} md:hidden flex-col gap-4 pt-4 pb-2`}>
+                        {['Features', 'Solutions', 'Pricing'].map((item) => (
+                            <a 
+                                key={item} 
+                                href={`#${item.toLowerCase()}`}
+                                className="text-gray-300 hover:text-white transition-colors px-2 py-2"
+                            >
+                                {item}
+                            </a>
+                        ))}
+                        <div className="flex flex-col gap-3 pt-3 border-t border-white/10">
+                            <button
+                                onClick={() => navigate("/login")}
+                                className="px-4 py-2 border-2 border-white/30 rounded-lg text-center"
+                            >
+                                Sign in
+                            </button>
+                            <button
+                                onClick={() => navigate("/signup")}
+                                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-lg text-center"
+                            >
+                                Get Started
+                            </button>
+                        </div>
                     </div>
-                </nav>
+                </div>
+            </nav>
 
             {/* Hero Section */}
             <section className="relative pt-20 pb-32 overflow-hidden">
                 <div className="container mx-auto px-6">
                     <div className="flex flex-col lg:flex-row items-center gap-16">
                         {/* Left Content */}
-                        <div className="lg:w-1/2 space-y-8">
+                        <div className="lg:w-1/2 space-y-8 text-center lg:text-left">
                             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">
                                 <span className="relative flex h-2 w-2">
                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -80,20 +122,20 @@ function Landing() {
                                 <span className="text-sm text-gray-300">AI-Powered Customer Support</span>
                             </div>
                             
-                            <h1 className="text-5xl md:text-6xl font-bold leading-tight">
+                            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">
                                 Transform Your
                                 <span className="block mt-2 bg-gradient-to-r from-blue-400 via-emerald-400 to-purple-400 text-transparent bg-clip-text">
                                     Customer Experience
                                 </span>
                             </h1>
                             
-                            <p className="text-xl text-gray-300 leading-relaxed">
+                            <p className="text-lg sm:text-xl text-gray-300 leading-relaxed">
                                 Elevate your customer support with AI-powered conversations, real-time analytics, 
                                 and seamless team collaboration.
                             </p>
 
                             {/* CTA Buttons */}
-                            <div className="flex flex-col sm:flex-row gap-4">
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                                 <button className="relative group">
                                     <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full blur opacity-60 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
                                     <div className="relative px-8 py-3 bg-black rounded-full leading-none flex items-center">
@@ -112,7 +154,7 @@ function Landing() {
                         </div>
                         
                         {/* Right Content - Dashboard Preview */}
-                        <div className="lg:w-1/2 relative">
+                        <div className="lg:w-1/2 relative px-4 sm:px-0">
                             <div className="relative rounded-xl overflow-hidden border border-white/10 shadow-2xl">
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                                 <img 
@@ -123,7 +165,7 @@ function Landing() {
                             </div>
 
                             {/* Floating Stats */}
-                            <div className="absolute -right-8 top-1/3 transform translate-x-1/2 -translate-y-1/2">
+                            <div className="absolute -right-8 top-1/3 transform translate-x-1/2 -translate-y-1/2 hidden md:block">
                                 <div className="animate-float">
                                     <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
                                         <div className="flex items-center gap-3">
@@ -139,7 +181,7 @@ function Landing() {
             </section>
 
             {/* Features Section */}
-            <section className="relative py-24 bg-slate-800/50">
+            <section className="relative py-16 sm:py-24 bg-slate-800/50">
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px]"></div>
                 
                 <div className="container mx-auto px-6 relative z-10">
@@ -155,7 +197,7 @@ function Landing() {
                         </h2>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                         {[
                             {
                                 icon: <FaBolt className="h-6 w-6" />,
@@ -192,9 +234,9 @@ function Landing() {
             </section>
 
             {/* How it Works Section */}
-            <section className="relative py-24">
+            <section className="relative py-16 sm:py-24">
                 <div className="container mx-auto px-6 relative z-10">
-                    <div className="flex flex-col lg:flex-row items-center gap-16">
+                    <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
                         <div className="lg:w-1/2 space-y-8">
                             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">
                                 <span className="text-sm text-gray-300">Simple Integration</span>
@@ -258,7 +300,7 @@ function Landing() {
             </section>
 
             {/* Call to Action Section */}
-            <section className="relative py-24 bg-slate-800/50">
+            <section className="relative py-16 sm:py-24 bg-slate-800/50">
                 <div className="container mx-auto px-6 relative z-10">
                     <div className="max-w-4xl mx-auto text-center">
                         <h2 className="text-4xl md:text-5xl font-bold mb-8">
@@ -288,13 +330,11 @@ function Landing() {
 
             {/* Footer Section */}
             <footer className="relative bg-slate-900 border-t border-white/10 w-full">
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px]"></div>
-                
-                <div className="container mx-auto px-6 py-20 relative z-10">
+                <div className="container mx-auto px-6 py-12 sm:py-20 relative z-10">
                     {/* Main Footer Content */}
-                    <div className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-16 max-w-full overflow-x-hidden">
-                        {/* Brand Column */}
-                        <div className="col-span-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-8 mb-16 max-w-full overflow-x-hidden">
+                        {/* Brand Column - Full width on mobile */}
+                        <div className="col-span-1 sm:col-span-2">
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="relative group">
                                     <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-lg blur opacity-60"></div>
@@ -326,7 +366,7 @@ function Landing() {
                             </div>
                         </div>
 
-                        {/* Quick Links */}
+                        {/* Quick Links - 2 columns on mobile */}
                         {[
                             {
                                 title: "Product",
@@ -366,14 +406,13 @@ function Landing() {
                         ))}
                     </div>
 
-                   
-                    {/* Bottom Bar */}
+                    {/* Bottom Bar - Stack on mobile */}
                     <div className="border-t border-white/10 pt-8 w-full">
-                        <div className="flex flex-col md:flex-row justify-between items-center gap-4 max-w-full">
-                            <div className="text-gray-400 text-sm">
+                        <div className="flex flex-col-reverse sm:flex-row justify-between items-center gap-4 max-w-full">
+                            <div className="text-gray-400 text-sm text-center sm:text-left">
                                 © 2024 ChatFlow. All rights reserved.
                             </div>
-                            <div className="flex gap-6 text-sm flex-wrap justify-center">
+                            <div className="flex flex-wrap justify-center gap-4 sm:gap-6 text-sm">
                                 <a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
                                 <a href="#" className="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
                                 <a href="#" className="text-gray-400 hover:text-white transition-colors">Cookies</a>
