@@ -2757,8 +2757,8 @@ const AdminPanel = () => {
 
         {/* Create Property Modal */}
         {showCreatePropertyModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div ref={createPropertyModalRef} className="bg-white w-[40%] h-auto p-6 rounded-lg shadow-xl">
+          <div className="fixed inset-0 bg-black w-full bg-opacity-50 flex items-center justify-center z-50">
+            <div ref={createPropertyModalRef} className="bg-white w-[90%] lg:w-[40%] h-auto p-6 rounded-lg shadow-xl">
               {/* Modal Header */}
               <h2 className="text-2xl font-semibold text-center mb-4 text-gray-700">
                 Create Property
