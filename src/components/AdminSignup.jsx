@@ -11,28 +11,44 @@ const AdminSignup = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
+    
     setIsLoading(true);
-
+    
     try {
-      await axios.post("https://chatbot.pizeonfly.com/api/admin/signup", {
-        username,
-        email,
-        password,
+      // Create FormData to handle file uploads
+      const formData = new FormData();
+      formData.append("username", username);
+      formData.append("email", email);
+      formData.append("password", password);
+      if (profileImage) {
+        formData.append("profileImage", profileImage); // Add the file
+      }
+      
+      // Send the FormData with proper headers
+      await axios.post("https://chatbot.pizeonfly.com/api/admin/signup", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
+      
       navigate("/");
     } catch (error) {
       setError(error.response?.data?.message || "An error occurred during signup.");
+    } finally {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-blue-50 via-white to-blue-50">
@@ -46,7 +62,7 @@ const AdminSignup = () => {
               Join our platform and experience the next generation of customer engagement.
             </p>
           </div>
-          
+
           <div className="space-y-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-white/10 rounded-lg">
@@ -68,7 +84,7 @@ const AdminSignup = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Decorative Background Elements */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 opacity-20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-700 opacity-20 rounded-full blur-3xl"></div>
@@ -94,6 +110,16 @@ const AdminSignup = () => {
 
               {/* Form inputs remain the same but with enhanced styling */}
               <div className="space-y-4">
+                <div className="mb-2">
+                  <label className="block text-sm font-medium text-gray-700">Profile Image</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setProfileImage(e.target.files[0])}
+                    className="w-full p-2 border border-gray-300 rounded"
+                    required
+                  />
+                </div>
                 {/* Email Input */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700 flex items-center gap-2">

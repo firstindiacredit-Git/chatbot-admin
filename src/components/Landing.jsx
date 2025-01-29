@@ -35,7 +35,7 @@ function Landing() {
                         </div>
 
                         {/* Mobile Menu Button */}
-                        <button 
+                        <button
                             className="md:hidden p-2 rounded-lg border border-white/10 hover:bg-white/5"
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         >
@@ -51,8 +51,8 @@ function Landing() {
                         {/* Desktop Navigation */}
                         <div className="hidden md:flex items-center gap-8">
                             {['Features', 'Solutions', 'Pricing'].map((item) => (
-                                <a 
-                                    key={item} 
+                                <a
+                                    key={item}
                                     href={`#${item.toLowerCase()}`}
                                     className="text-sm text-gray-300 hover:text-white transition-colors relative group py-2"
                                 >
@@ -60,30 +60,30 @@ function Landing() {
                                     <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-emerald-500 group-hover:w-full transition-all duration-300"></span>
                                 </a>
                             ))}
-                            
-                        <button
-                            onClick={() => navigate("/login")}
+
+                            <button
+                                onClick={() => navigate("/login")}
                                 className="relative inline-flex items-center px-4 py-2 overflow-hidden text-sm font-medium transition-all rounded-lg group"
-                        >
+                            >
                                 <span className="absolute inset-0 border-2 border-white/30 rounded-lg"></span>
                                 <span className="relative">Sign in</span>
-                        </button>
+                            </button>
 
-                        <button
-                            onClick={() => navigate("/signup")}
+                            <button
+                                onClick={() => navigate("/signup")}
                                 className="relative inline-flex items-center px-6 py-2 overflow-hidden text-sm font-medium transition-all rounded-lg group"
-                        >
+                            >
                                 <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-lg"></span>
                                 <span className="relative">Get Started</span>
-                        </button>
+                            </button>
                         </div>
                     </div>
 
                     {/* Mobile Menu */}
                     <div className={`${isMobileMenuOpen ? 'flex' : 'hidden'} md:hidden flex-col gap-4 pt-4 pb-2`}>
                         {['Features', 'Solutions', 'Pricing'].map((item) => (
-                            <a 
-                                key={item} 
+                            <a
+                                key={item}
                                 href={`#${item.toLowerCase()}`}
                                 className="text-gray-300 hover:text-white transition-colors px-2 py-2"
                             >
@@ -121,16 +121,16 @@ function Landing() {
                                 </span>
                                 <span className="text-sm text-gray-300">AI-Powered Customer Support</span>
                             </div>
-                            
+
                             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">
                                 Transform Your
                                 <span className="block mt-2 bg-gradient-to-r from-blue-400 via-emerald-400 to-purple-400 text-transparent bg-clip-text">
                                     Customer Experience
                                 </span>
                             </h1>
-                            
+
                             <p className="text-lg sm:text-xl text-gray-300 leading-relaxed">
-                                Elevate your customer support with AI-powered conversations, real-time analytics, 
+                                Elevate your customer support with AI-powered conversations, real-time analytics,
                                 and seamless team collaboration.
                             </p>
 
@@ -152,13 +152,13 @@ function Landing() {
                                 </button>
                             </div>
                         </div>
-                        
+
                         {/* Right Content - Dashboard Preview */}
                         <div className="lg:w-1/2 relative px-4 sm:px-0">
                             <div className="relative rounded-xl overflow-hidden border border-white/10 shadow-2xl">
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                                <img 
-                                    src={image} 
+                                <img
+                                    src={image}
                                     alt="Dashboard Preview"
                                     className="w-full h-auto"
                                 />
@@ -183,7 +183,7 @@ function Landing() {
             {/* Features Section */}
             <section className="relative py-16 sm:py-24 bg-slate-800/50">
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px]"></div>
-                
+
                 <div className="container mx-auto px-6 relative z-10">
                     <div className="text-center max-w-3xl mx-auto mb-20">
                         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-6">
@@ -268,7 +268,7 @@ function Landing() {
                             </div>
                         </div>
 
-                        <div className="lg:w-1/2">
+                        <div className="w-full lg:w-1/2">
                             <div className="relative">
                                 <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-xl blur opacity-30"></div>
                                 <div className="relative bg-slate-900 p-6 rounded-xl border border-white/10">
@@ -281,16 +281,16 @@ function Landing() {
                                         <span className="text-sm text-gray-400">script.js</span>
                                     </div>
                                     <pre className="text-sm text-gray-300 font-mono">
-                                        <code>{`<script>
+                            <code>{`<script>
   window.chatConfig = {
     websiteId: "your-website-id",
     position: "bottom-right"
   }
 </script>
 <script 
-  src="https://chatbot.pizeonfly.com/widget.js" 
-  async
-></script>`}</code>
+    src="https://chatbot.pizeonfly.com/
+    widget.js" >
+</script>`}</code>
                                     </pre>
                                 </div>
                             </div>
@@ -347,7 +347,7 @@ function Landing() {
                                 </div>
                             </div>
                             <p className="text-gray-400 mb-6">
-                                Empowering businesses with intelligent customer communication solutions. 
+                                Empowering businesses with intelligent customer communication solutions.
                                 Transform your customer support experience today.
                             </p>
                             <div className="flex gap-4">
@@ -390,8 +390,8 @@ function Landing() {
                                 <ul className="space-y-3">
                                     {column.links.map((link, linkIndex) => (
                                         <li key={linkIndex}>
-                                            <a 
-                                                href="#" 
+                                            <a
+                                                href="#"
                                                 className="text-gray-400 hover:text-white transition-colors inline-flex items-center group"
                                             >
                                                 <span>{link}</span>

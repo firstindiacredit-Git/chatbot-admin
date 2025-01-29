@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FaUser, FaLock, FaExclamationCircle } from 'react-icons/fa';
+import ReCAPTCHA from "react-google-recaptcha";
 import logoimage from '../assets/pizeonfly.png';
 
 const AdminLogin = () => {
@@ -9,17 +10,39 @@ const AdminLogin = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const recaptchaRef = useRef(null);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
+
+    const recaptchaValue = recaptchaRef.current.getValue();
+    if (!recaptchaValue) {
+      setError("Please complete the reCAPTCHA verification");
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const response = await axios.post("https://chatbot.pizeonfly.com/api/admin/login", { username, password });
+      const response = await axios.post("https://chatbot.pizeonfly.com/api/admin/login", { 
+        username, 
+        password,
+        token: recaptchaValue 
+      });
       localStorage.setItem("adminToken", response.data.token);
+      localStorage.setItem("adminName", response.data.admin.username);
+      localStorage.setItem("adminId", response.data.admin.id);
+      if (response.data.admin.profileImage) {
+        localStorage.setItem("profileImage", response.data.admin.profileImage);
+      } else {
+        localStorage.removeItem("profileImage");
+      }
       navigate("/dashboard");
     } catch (error) {
       setError(error.response?.data?.message || "Invalid login credentials");
+      recaptchaRef.current.reset();
       setIsLoading(false);
     }
   };
@@ -74,6 +97,14 @@ const AdminLogin = () => {
                   required
                 />
               </div>
+            </div>
+
+            <div className="flex justify-center">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey="6LeSdMYqAAAAAJmcalchIf6pC0CpO7nu_Ss7S_ck"
+                theme="light"
+              />
             </div>
 
             <button
