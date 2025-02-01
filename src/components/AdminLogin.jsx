@@ -6,7 +6,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import logoimage from '../assets/pizeonfly.png';
 
 const AdminLogin = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -27,18 +27,18 @@ const AdminLogin = () => {
 
     try {
       const response = await axios.post("https://chatbot.pizeonfly.com/api/admin/login", { 
-        username, 
+        email, 
         password,
         token: recaptchaValue 
       });
+
+      // Store all admin data in localStorage
       localStorage.setItem("adminToken", response.data.token);
-      localStorage.setItem("adminName", response.data.admin.username);
       localStorage.setItem("adminId", response.data.admin.id);
-      if (response.data.admin.profileImage) {
-        localStorage.setItem("profileImage", response.data.admin.profileImage);
-      } else {
-        localStorage.removeItem("profileImage");
-      }
+      localStorage.setItem("adminName", response.data.admin.username);
+      localStorage.setItem("adminEmail", response.data.admin.email);
+      localStorage.setItem("profileImage", response.data.admin.profileImage);
+
       navigate("/dashboard");
     } catch (error) {
       setError(error.response?.data?.message || "Invalid login credentials");
@@ -66,16 +66,16 @@ const AdminLogin = () => {
             )}
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Username</label>
+              <label className="text-sm font-medium text-gray-700">Email</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <FaUser className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
-                  type="text"
-                  placeholder="Username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all"
                   required
                 />

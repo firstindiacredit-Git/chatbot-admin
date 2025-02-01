@@ -139,7 +139,7 @@ function Landing() {
                                 <button className="relative group">
                                     <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full blur opacity-60 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
                                     <div className="relative px-8 py-3 bg-black rounded-full leading-none flex items-center">
-                                        <span className="text-white">Start Free Trial</span>
+                                        <span onClick={() => navigate("/signup")} className="text-white">Start Free Trial</span>
                                         <span className="ml-3 group-hover:translate-x-2 transition-transform">→</span>
                                     </div>
                                 </button>
@@ -181,7 +181,7 @@ function Landing() {
             </section>
 
             {/* Features Section */}
-            <section className="relative py-16 sm:py-24 bg-slate-800/50">
+            <section id="features" className="relative py-16 sm:py-24 bg-slate-800/50">
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px]"></div>
 
                 <div className="container mx-auto px-6 relative z-10">
@@ -234,7 +234,7 @@ function Landing() {
             </section>
 
             {/* How it Works Section */}
-            <section className="relative py-16 sm:py-24">
+            <section id="solutions" className="relative py-16 sm:py-24">
                 <div className="container mx-auto px-6 relative z-10">
                     <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
                         <div className="lg:w-1/2 space-y-8">
@@ -280,18 +280,21 @@ function Landing() {
                                         </div>
                                         <span className="text-sm text-gray-400">script.js</span>
                                     </div>
-                                    <pre className="text-sm text-gray-300 font-mono">
-                            <code>{`<script>
-  window.chatConfig = {
-    websiteId: "your-website-id",
-    position: "bottom-right"
-  }
-</script>
-<script 
-    src="https://chatbot.pizeonfly.com/
-    widget.js" >
-</script>`}</code>
-                                    </pre>
+                                    <p className="text-sm text-gray-300 break-words font-mono">
+                                        <code>{`<script>
+                                        document.addEventListener('DOMContentLoaded',()=>{
+                                            const i=document.createElement('iframe'),c=document.createElement('div'),
+                                            chat='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>',
+                                            close='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+                                            i.src='https://chatbot-user.vercel.app/';i.style.cssText='position:fixed;bottom:100px;right:20px;width:350px;height:500px;border:none;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.15);display:none;background:#fff;z-index:9999;transition:.3s ease';
+                                            c.innerHTML=chat;c.style.cssText='position:fixed;bottom:20px;right:20px;width:56px;height:56px;background:#5992ee;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 12px rgba(89,146,238,.4);z-index:10000;transition:.3s ease';
+                                            c.onmouseover=()=>{c.style.transform='scale(1.1)';c.style.boxShadow='0 6px 16px rgba(89,146,238,.5)'};
+                                            c.onmouseout=()=>{c.style.transform='scale(1)';c.style.boxShadow='0 4px 12px rgba(89,146,238,.4)'};
+                                            c.onclick=()=>{const v=i.style.display==='block';i.style.display=v?'none':'block';i.style.transform=v?'translateY(20px)':'translateY(0)';i.style.opacity=v?'0':'1';c.style.transform=v?'rotate(0deg)':'rotate(360deg)';setTimeout(()=>c.innerHTML=v?chat:close,150)};
+                                            document.body.append(i,c);
+                                        });
+  </script>`}</code>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -313,7 +316,7 @@ function Landing() {
                             Join thousands of businesses that use ChatFlow to provide exceptional customer service.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <button className="relative group">
+                            <button onClick={() => navigate("/signup")} className="relative group">
                                 <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full blur opacity-60 group-hover:opacity-100 transition duration-1000"></div>
                                 <div className="relative px-8 py-3 bg-black rounded-full leading-none flex items-center">
                                     <span>Start Free Trial</span>
